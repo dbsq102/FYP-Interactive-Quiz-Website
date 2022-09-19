@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Auth;
 
 class RoleChecker
 {
@@ -14,15 +15,11 @@ class RoleChecker
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle($request, Closure $next, $studentRole,  $educatorRole)
-{
-    $roles = Auth::check() ? Auth::user()->role->pluck('name')->toArray() : [];
-
-    if (in_array($studentRole, $roles)) {
-        return $next($request);
-    } else if (in_array($educatorRole, $roles)) {
-        return $next($request);
+    public function checkRole($request, Closure $next) {
+        if (Auth::user()->role == 1){
+            return $next($request);
+        }
+        
+        return Redirect::route('home');
     }
-    return Redirect::route('home');
-}
 }

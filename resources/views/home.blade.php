@@ -1,41 +1,49 @@
-<!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>Quiz Website</title>
-
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
-
-    <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-</head>
-
-<body>
-@include('header')
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Welcome to the Quiz Website!') }}</div>
-
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-                    Still a work in progress...
+        @include('header')
+        <br>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <!-- Shows create quiz shortcut if educator, available quizzes in group if student -->
+                    <!-- Student view -->
+                    <div class="card-header">
+                        Welcome, {{Auth::user()->username }}
+                    </div>
+                    <div class="card-body">
+                        @if (session('status'))
+                            <div class="alert alert-success" role="alert">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+                        @if (Auth::user()->role == 0)
+                            <p>Here are some quizzes assigned to your group, [GroupName]. </p>
+                            <!-- put display quiz code here -->
+                            <p>No quizzes for your group.</p>
+                        @else
+                            <p>Let's make a new quiz for students! </p>
+                            <form method="POST">
+                                <button type="submit" class="btn btn-primary">
+                                    Create a New Quiz
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+                <br>
+                <!-- Educator view -->
+                <div class="card">
+                    <div class="card-header">
+                        Available Quizzes
+                    </div>
+                    <div class="card-body">
+                        @if (session('status'))
+                            <div class="alert alert-success" role="alert">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+                        <p>No quizzes found.</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    </div>
-</div>
-</body>
+    </body>
 </html>
