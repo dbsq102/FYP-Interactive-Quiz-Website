@@ -66,7 +66,7 @@
 
                             <div class="col-md-6">
                                 <input id="roleStudent" type="radio" name="role" value="0">
-                                <label for="roleStudent"></label><br>
+                                <label for="roleStudent">Student</label><br>
                                 <input id="roleEducator" type="radio" name="role" value="1">
                                 <label for="roleEducator">Educator</label><br>
                             </div>

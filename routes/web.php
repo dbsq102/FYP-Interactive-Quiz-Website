@@ -30,4 +30,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/createquiz1',[GroupsController::class,'obtainData'])->name('createquiz1');
     Route::post('/addquiz', [QuizController::class, 'addQuiz'])->name('addquiz');
     Route::get('/createquiz2', [QuizController::class, 'addQuizView'])->name('createquiz2');
+    Route::post('/update-ques-type', [QuizController::class, 'updateQuestType'])->name('update-ques-type');
+    //Route::get('/editquiz', [QuizController::class, 'editQuizView'])->name('editquiz');
+    Route::post('/updatequiz', [QuizController::class, 'updateQuiz'])->name('updatequiz');
 });

@@ -81,3 +81,10 @@ body {
     width: 40%;
     margin: 0 auto;
  }
+
+ .sidebar {
+    float:left;
+    width:30%;
+    border-right-style: solid;
+    border-color: blueviolet;
+ }
