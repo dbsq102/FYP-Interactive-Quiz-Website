@@ -25,4 +25,38 @@ class QuizController extends Controller
             return view("managequiz")->with(compact('quiz'));
         }
     }
+
+    //Upon initial page button press
+    public function addQuiz(Request $request) {
+        // Get User Id
+        $userID = Auth::id();
+        $request->validate([
+            'quiz_title'=>'required',
+            'quiz_desc' =>'required',
+            'gamemode_id'=>'required',
+            'subject_id'=>'required',
+            'items'=>'required',
+        ]);
+        $quiz = new Quiz();
+        $quiz->quiz_title = $request->quiz_title;
+        $quiz->quiz_summary = $request->quiz_desc;
+        $quiz->gamemode_id = $request->gamemode_id;
+        $quiz->group_id = $request->group_id;
+        $quiz->items = $request->items;
+        $quiz->subject_id = $request->subject_id;
+        $quiz->time_limit = 0;
+        $quiz->user_id = $userID;
+
+        $res = $quiz->save();
+        if($res){
+            return redirect('createquiz2')->with('success', 'A new quiz has been added.');
+        }
+        else {
+            return with('fail', 'Failed to add quiz.');
+        } 
+    }
+
+    public function addQuizView(){
+        return view ('createquiz2');
+    }
 }

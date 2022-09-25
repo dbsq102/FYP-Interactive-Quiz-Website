@@ -4,16 +4,22 @@
             <div class="display-table">
                 <!-- Check if quiz table is empty -->
                 @if(!empty($quiz))
-                <table>
+                <table class='quiz-table'>
                     <!-- First row -->
                     <tr>
                         <th>Quiz</th>
                         <th>Subject</th>
                         <th>Summary</th>
                         <th>Game Mode</th>
-                        <th>Time</th>
+                        <th>Time (s)</th>
                         <th>Items Allowed?</th>
                         <th>Private?</th>
+                        @if (Auth::user()->role == 0)
+                            <th>Play</th>
+                        @else
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        @endif
                     </tr>
                     @foreach($quiz as $quizView)
                         <tr id = "{{ $quizView -> quiz_id}}Row">
@@ -34,6 +40,12 @@
                             @else
                                 <td>No</td>
                             @endif
+                            @if (Auth::user()->role == 0)
+                                <td><a href="">Attempt Quiz</td>
+                            @else
+                                <td><a href="{{route('createquiz2')}}">Edit</td>
+                                <td><a href="">Delete</td>
+                            @endif
                         </tr>
                     @endforeach
                 </table>
@@ -42,6 +54,16 @@
                 <p>No quizzes available</p>
                 @endif
             </div>
+            
+        </div>
+        <div class="row justify-content-center">
+        @if (Auth::user()->role == 1)
+            <form action="{{route('createquiz1')}}">
+                <button type="submit" class="btn btn-primary">
+                    Create a New Quiz
+                </button>
+            </form>
+        @endif
         </div>
     </body>
 </html>

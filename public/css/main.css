@@ -39,3 +39,45 @@ body {
     background-color: blueviolet;
     color: #ffffff;
 }
+
+.quiz-table {
+    font-family: Arial;
+    border-collapse: collapse;
+    width: 750px;
+    padding:50px;
+    font: 14px Arial, Helvetica, sans-serif, bold;
+    margin: 0 auto;
+ }
+ 
+ .quiz-table td, #quiz-table th {
+    border: 2px solid #ddd;
+    padding: 8px;
+ }
+ 
+ .quiz-table th {
+    font-size: 14px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color:blueviolet;
+    color:white;
+ }
+ 
+ .quiz-table tr:nth-child(even){
+    background-color: #f2f2f2;
+ }
+ 
+ .quiz-table tr:nth-child(odd){
+    background-color: #cdcdcd;
+ }
+
+ .quiz-table p {
+    display:inline;
+ }
+
+ .center {
+    align-items: center;
+    justify-content: center;
+    width: 40%;
+    margin: 0 auto;
+ }

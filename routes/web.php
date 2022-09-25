@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\GroupsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,4 +26,8 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 // All Routes which needs account login to access
 Route::middleware('auth')->group(function(){
     Route::get('/managequiz',[QuizController::class,'obtainQuiz'])->name('managequiz');
+    
+    Route::get('/createquiz1',[GroupsController::class,'obtainData'])->name('createquiz1');
+    Route::post('/addquiz', [QuizController::class, 'addQuiz'])->name('addquiz');
+    Route::get('/createquiz2', [QuizController::class, 'addQuizView'])->name('createquiz2');
 });
