@@ -13,10 +13,10 @@
                         <th>Game Mode</th>
                         <th>Time (s)</th>
                         <th>Items Allowed?</th>
-                        <th>Private?</th>
                         @if (Auth::user()->role == 0)
                             <th>Play</th>
                         @else
+                            <th>Public?</th>
                             <th>Edit</th>
                             <th>Delete</th>
                         @endif
@@ -35,16 +35,27 @@
                                 <td>Yes</td>
                             @endif
                             <!-- Likewise, if group_id is null, display no, otherwise yes-->
-                            @if($quizView -> group_id)
-                                <td>Yes</td>
-                            @else
-                                <td>No</td>
+                            @if (Auth::user()->role == 1)
+                                @if(!$quizView -> group_id)
+                                    <td>Open</td>
+                                @else
+                                    <td>Private</td>
+                                @endif
                             @endif
                             @if (Auth::user()->role == 0)
-                                <td><a href="">Attempt Quiz</td>
+                                @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
+                                    <td><a href="">Attempt Quiz</td>
+                                @else
+                                    <td>Private</td>
+                                @endif
                             @else
-                                <td><a href= "{{route('editquiz', $quizView->quiz_id ) }}">({{$quizView->quiz_id}}) Edit</td>
-                                <td><a href="">Delete</td>
+                                @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
+                                    <td><a href= "{{route('editquiz', $quizView->quiz_id ) }}">({{$quizView->quiz_id}}) Edit</td>
+                                    <td><a href="">Delete</td>
+                                @else
+                                    <td>Cannot Edit</td>
+                                    <td>Cannot Delete </td>
+                                @endif
                             @endif
                         </tr>
                     @endforeach
@@ -55,7 +66,7 @@
                 @endif
             </div>
             
-        </div>
+        </div><br>
         <div class="row justify-content-center">
         @if (Auth::user()->role == 1)
             <form action="{{route('createquiz1')}}">

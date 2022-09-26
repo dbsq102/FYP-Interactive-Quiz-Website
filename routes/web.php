@@ -33,5 +33,8 @@ Route::middleware('auth')->group(function(){
     Route::post('/update-ques-type', [QuizController::class, 'updateQuesType'])->name('update-ques-type');
     Route::post('/updatequiz', [QuizController::class, 'updateQuiz'])->name('updatequiz');
     Route::get('/editquiz/{passQuizID}', [QuizController::class, 'editQuizView'])->name('editquiz');
-    Route::post('/add-multi-choice', [QuizController::class, 'addMultiChoice'])->name('add-multi-choice');
+    Route::get('/save-multi-choice', [QuizController::class, 'saveMultiChoice'])->name('save-multi-choice');
+    Route::post('/next-question', [QuizController::class, 'nextQuestion'])->name('next-question');
+    Route::post('/prev-question', [QuizController::class, 'prevQuestion'])->name('prev-question');
+    Route::get('/add-question', [QuizController::class, 'addNewQuestion'])->name('add-question');
 });

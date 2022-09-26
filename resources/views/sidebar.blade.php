@@ -6,7 +6,7 @@
                 <div class="card-body">
                     <form method="POST" action="{{ route('updatequiz') }}">
                     @csrf
-                        <!-- Quiz Description -->
+                        <!-- Quiz Title -->
                         <div class="row mb-3">
                             <label for="update_quiz_title" class="col-md-4 col-form-label text-md-end">Quiz Title</label>
                             @if(!empty($currQuiz->quiz_title))
