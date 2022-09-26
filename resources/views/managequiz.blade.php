@@ -43,7 +43,7 @@
                             @if (Auth::user()->role == 0)
                                 <td><a href="">Attempt Quiz</td>
                             @else
-                                <td><a href= "{{route('createquiz2') }}">({{$quizView->quiz_id}}) Edit</td>
+                                <td><a href= "{{route('editquiz', $quizView->quiz_id ) }}">({{$quizView->quiz_id}}) Edit</td>
                                 <td><a href="">Delete</td>
                             @endif
                         </tr>

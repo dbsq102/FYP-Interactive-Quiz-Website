@@ -22,6 +22,7 @@ class QuizController extends Controller
             ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
             ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
             ->where('quiz.user_id', '=', $userID)
+            ->orderBy('quiz.user_id', 'asc')
             ->get();
 
             return view("managequiz")->with(compact('quiz'));
@@ -52,7 +53,7 @@ class QuizController extends Controller
 
         $res = $quiz->save();
         if($res){
-            return redirect('createquiz2')->with('success', 'A new quiz has been added.');
+            return redirect()->route('add-quiz-view')->with('success', 'A new quiz has been added.');
         }
         else {
             return with('fail', 'Failed to add quiz.');
@@ -65,7 +66,7 @@ class QuizController extends Controller
         //Get most recent quiz ID
         $quizID = DB::table('quiz')->orderBy('quiz_id', 'desc')->value('quiz_id');
         //Get most recent quiz's set gamemode
-        $gamemodeID = DB::table('quiz')->orderBy('quiz_id', 'desc')->value('gamemode_id');
+        $gamemodeID = DB::table('quiz')->where('quiz_id', '=', $quizID)->value('gamemode_id');
         //Check if question exists via quiz ID in question table
         $checkQuestion = Question::where('quiz_id', '=', $quizID)->first();
         //Add question 1 if no such thing already exists
@@ -106,13 +107,13 @@ class QuizController extends Controller
         ->get();
 
         Session::put('quesNo', 1);
+        Session::put('quizID', $quizID);
                 
-        return view ('createquiz2')->with(compact('quiz'))->with(compact('currQuiz'))->with(compact('groups'))
-        ->with(compact('gamemodes'))->with(compact('subjects'))->with(compact('questype'));
+        return view('quizeditor')->with(compact('quiz', 'currQuiz', 'groups', 'gamemodes', 'subjects', 'questype'));
     }
 
     //Used to display quiz editor via manage quiz tab
-    public function editQuizView($passQuizID){
+    public function editQuizView($passQuizID){    
         //Get necessary database data for next page
         $quiz = DB::table('quiz')
         ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.items','quiz.time_limit', 'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
@@ -121,80 +122,97 @@ class QuizController extends Controller
         ->get();
 
         $currQuiz = DB::table('quiz')
-        ->select('quiz_id', 'quiz_title', 'quiz_summary', 'items','time_limit', 'group_id')
-        ->where('quiz_id', '=', $passQuizID)
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.gamemode_id', 'quiz.items','quiz.time_limit', 
+        'quiz.subject_id', 'quiz.group_id', 'question_bank.type_id')
+        ->join('question_bank', 'question_bank.quiz_id', '=', 'quiz.quiz_id')
+        ->where('quiz.quiz_id', '=', $passQuizID)
         ->first();
 
         $groups = DB::select('select * from groups');
         $gamemodes = DB::select('select * from game_mode');
         $subjects = DB::select('select * from subject');
         $questype = DB::table('question_type')
-        ->select('question_type.type_id')
-        ->join('quiz', 'quiz.gamemode_id', '=', 'question_type.gamemode_id')
+        ->select('question_type.type_id', 'question_type.type_name', 'question_type.gamemode_id')
+        ->join('game_mode', 'question_type.gamemode_id', '=','game_mode.gamemode_id')
         ->get();
+
+        Session::put('quesNo', 1);
+        Session::put('quizID', $passQuizID);
                 
-        return view ('createquiz2')->with(compact('quiz'))->with(compact('currQuiz'))->with(compact('groups'))
-        ->with(compact('gamemodes'))->with(compact('subjects'))->with(compact('questype'));
+        return view('quizeditor')->with(compact('quiz', 'currQuiz', 'groups', 'gamemodes', 'subjects', 'questype'));
     }
 
     public function updateQuiz(Request $request){
         //validate updatable information
-        $userID = Auth::id();
-        //If select ID from manage quizzes page, get quiz ID from there
-        if(!empty($request->quiz_id)) {
-            $quizID = DB::table('quiz')->where('quiz.quiz_id', '=', $request->quiz_id)->value('quiz_id');
-        }
-        //Otherwise, get latest quiz ID
-        else {
-            $quizID = DB::table('quiz')->orderBy('quiz_id', 'desc')->value('quiz_id');
-        }
         $request->validate([
-            'quiz_title'=>'required',
-            'quiz_desc' =>'required',
-            'gamemode_id'=>'required',
-            'time_limit'=>'required',
-            'subject_id'=>'required',
-            'items'=>'required',
+            'update_quiz_title'=>'required',
+            'update_quiz_desc' =>'required',
+            'update_gamemode_id'=>'required',
+            'update_time_limit'=>'required',
+            'update_subject_id'=>'required',
+            'update_items'=>'required',
         ]);
-        //Check if quiz exists
-        $checkQuiz = Quiz::where('quiz_id','=',$quizID)->first();
+        //Find quiz via ID
+        $checkQuiz = Quiz::find(Session::get('quizID'));
         //Update quiz details
         if($checkQuiz){
-            $checkQuiz->quiz_title = $request->quiz_title;
-            $checkQuiz->quiz_summary = $request->quiz_desc;
-            $checkQuiz->gamemode_id = $request->gamemode_id;
-            $checkQuiz->group_id = $request->group_id;
-            $checkQuiz->items = $request->items;
-            $checkQuiz->subject_id = $request->subject_id;
-            $checkQuiz->time_limit = $request->time_limit;
+            $checkQuiz->quiz_title = $request->update_quiz_title;
+            $checkQuiz->quiz_summary = $request->update_quiz_desc;
+            $checkQuiz->gamemode_id = $request->update_gamemode_id;
+            $checkQuiz->group_id = $request->update_group_id;
+            $checkQuiz->items = $request->update_items;
+            $checkQuiz->subject_id = $request->update_subject_id;
+            $checkQuiz->time_limit = $request->update_time_limit;
 
-            $res = $checkStock->save();
+            $res = $checkQuiz->save();
+
+            if($res){
+                Session::flash('success', 'Quiz has been updated successfully!');
+                return redirect()->route('editquiz', Session::get('quizID'));
+            }
+
+            else{
+                Session::flash('success', 'fail','Unable to update quiz.');
+                return redirect()->route('editquiz', Session::get('quizID'));
+            }
         //Return message if quiz not found
         }else {
             return redirect('managequiz')->with('fail','Quiz does not exist, somehow...');
         } 
-
-        if($res){
-            return redirect('createquiz2')->with('success', 'Quiz has been updated successfully!');
-        }
-
-        else{
-            return redirect('createquiz2')->with('fail','Unable to update quiz.');
-        }
     }
 
     public function updateQuesType(Request $request) {
         //Check if question exists
-        $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->first();
+        $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where( 'quiz_id', '=', Session::get('quizID'))->first();
         //Update question type
         if($checkQuestion){
-            $checkQuestion->type_id = $request ->type_id;
+            $checkQuestion->type_id = $request->question_type;
             
             $res = $checkQuestion->save();
 
             if ($res) {
-                return view ('createquiz2')->with('success', 'Question type updated.');
+                return redirect()->route('editquiz', Session::get('quizID'))->with('success', 'Question type updated.');
             }
+            else {
+                return redirect()->route('editquiz', Session::get('quizID'))->with('fail', 'Question type failed to update.');
+            }
+        }
+    }
+
+    public function addMultiChoice(Request $request) {
+        switch($request->input('action')) {
+            case 'previous':
+                //Save to database
+
+                Session::put('quizID', Session::get('quizID') - 1);
+                return redirect()->route('editquiz', Session::get('quizID'));
+                break;
+            case 'next':
+                //Save to database
+                
+                Session::put('quizID', Session::get('quizID') + 1);
+                return redirect()->route('editquiz', Session::get('quizID'));
+                break;
         }
     }
 }

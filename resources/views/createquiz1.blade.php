@@ -21,7 +21,7 @@
                                 <label for="quiz_desc" class="col-md-4 col-form-label text-md-end">Quiz Description</label>
 
                                 <div class="col-md-6">
-                                    <textarea id="quiz_desc" class="quiz_desc" name="quiz_desc" value="quiz_desc" rows="5" cols="40" required></textarea>
+                                    <textarea id="quiz_desc" class="quiz_desc" name="quiz_desc" rows="5" cols="40" required></textarea>
                                 </div>
                             </div>
 
@@ -55,7 +55,7 @@
 
                             <!-- Select Time Limit -->
                             <div class="row mb-3">
-                                <label for="subject_id" class="col-md-4 col-form-label text-md-end">Time Limit: </label>
+                                <label for="time_limit" class="col-md-4 col-form-label text-md-end">Time Limit: </label>
                                 <div class="col-8">
                                     <input id="time_limit" name="time_limit" type="number" step="1" required="required" min="30" max="180"
                                     value="time_limit" placeholder="30" class="form-control">    
