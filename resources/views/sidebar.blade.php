@@ -2,7 +2,7 @@
         <br>
         <div class="sidebar">
             <div class="card">   
-                <div class="card-header">Edit Quiz {{Session::get('quizID')}}</div>
+                <div class="card-header">Edit Quiz ID: {{Session::get('quizID')}}</div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('updatequiz') }}">
                     @csrf

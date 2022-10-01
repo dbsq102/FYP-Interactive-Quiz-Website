@@ -325,7 +325,20 @@ class QuizController extends Controller
     public function prevQuestion() {
         //decrease session number
         Session::put('quesNo', Session::get('quesNo') - 1);
-        return redirect()->route('editquiz', Session::get('quizID'));
+        //Check for question type
+        $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where('quiz_id', '=', Session::get('quizID'))->first();
+        //Get gamemode ID
+        $gamemodeID = DB::table('quiz')->where('quiz_id', '=', Session::get('quizID'))->value('gamemode_id');
+        if ($checkQuestion) {
+            //Update question type if gamemode ID does not match
+            if($gamemodeID == 1) {
+                $checkQuestion->type_id = 1;
+            }else if ($gamemodeID == 2) {
+                $checkQuestion->type_id = 3;
+            }
+            $checkQuestion->save();
+            return redirect()->route('editquiz', Session::get('quizID'));
+        }
     }
 
     public function nextQuestion(){
@@ -333,10 +346,20 @@ class QuizController extends Controller
         Session::put('quesNo', Session::get('quesNo') + 1);
         //Check if question exists, if not, add question
         $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where('quiz_id', '=', Session::get('quizID'))->first();
+        //Get gamemode ID
+        $gamemodeID = DB::table('quiz')->where('quiz_id', '=', Session::get('quizID'))->value('gamemode_id');
+
         if (!$checkQuestion) {
             return redirect()->route('add-question');
         }
         else {
+            //Update question type if gamemode ID does not match
+            if($gamemodeID == 1) {
+                $checkQuestion->type_id = 1;
+            }else if ($gamemodeID == 2) {
+                $checkQuestion->type_id = 3;
+            }
+            $checkQuestion->save();
             return redirect()->route('editquiz', Session::get('quizID'));
         }
     }

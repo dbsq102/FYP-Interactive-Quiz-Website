@@ -50,7 +50,7 @@
                                 @endif
                             @else
                                 @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
-                                    <td><a href= "{{route('editquiz', $quizView->quiz_id ) }}">({{$quizView->quiz_id}}) Edit</td>
+                                    <td><a href= "{{route('editquiz', $quizView->quiz_id ) }}">Edit</td>
                                     <td><a href="">Delete</td>
                                 @else
                                     <td>Cannot Edit</td>

@@ -21,70 +21,82 @@ body {
 }
 
 .nav-right {
-    float: right;
-    width: 300px;
-    color: #ffffff;
+   float: right;
+   width: 300px;
+   color: #ffffff;
 	font-weight: bold;
 	text-align: center;
-    padding-top: 15px;
-    font-size: 15px;
+   padding-top: 15px;
+   font-size: 15px;
 }
 
 #menu p2 {
-    float:left;
-    width: 100px;
+   float:left;
+   width: 100px;
 }
 
 .card-header {
-    background-color: blueviolet;
-    color: #ffffff;
+   background-color: blueviolet;
+   color: #ffffff;
 }
 
 .quiz-table {
-    font-family: Arial;
-    border-collapse: collapse;
-    width: 750px;
-    padding:50px;
-    font: 14px Arial, Helvetica, sans-serif, bold;
-    margin: 0 auto;
- }
+   font-family: Arial;
+   border-collapse: collapse;
+   width: 750px;
+   padding:50px;
+   font: 14px Arial, Helvetica, sans-serif, bold;
+   margin: 0 auto;
+}
  
- .quiz-table td, #quiz-table th {
-    border: 2px solid #ddd;
-    padding: 8px;
- }
+.quiz-table td, #quiz-table th {
+   border: 2px solid #ddd;
+   padding: 8px;
+}
  
- .quiz-table th {
-    font-size: 14px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: center;
-    background-color:blueviolet;
-    color:white;
- }
+.quiz-table th {
+   font-size: 14px;
+   padding-top: 12px;
+   padding-bottom: 12px;
+   text-align: center;
+   background-color:blueviolet;
+   color:white;
+}
  
- .quiz-table tr:nth-child(even){
-    background-color: #f2f2f2;
- }
+.quiz-table tr:nth-child(even){
+   background-color: #f2f2f2;
+}
  
- .quiz-table tr:nth-child(odd){
-    background-color: #cdcdcd;
- }
+.quiz-table tr:nth-child(odd){
+   background-color: #cdcdcd;
+}
 
- .quiz-table p {
-    display:inline;
- }
+.quiz-table p {
+   display:inline;
+}
 
- .center {
-    align-items: center;
-    justify-content: center;
-    width: 40%;
-    margin: 0 auto;
- }
+.center {
+   align-items: center;
+   justify-content: center;
+   width: 40%;
+   margin: 0 auto;
+}
 
- .sidebar {
-    float:left;
-    width:30%;
-    border-right-style: solid;
-    border-color: blueviolet;
- }
+.sidebar {
+   float:left;
+   width:30%;
+   border-right-style: solid;
+   border-color: blueviolet;
+}
+
+.previous{
+   float:left;
+   display:inline;
+   margin-left:50px;
+}
+
+.next {
+   float:right;
+   display:inline;
+   margin-right: 50px;
+}
