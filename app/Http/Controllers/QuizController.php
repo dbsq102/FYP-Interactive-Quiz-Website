@@ -19,7 +19,7 @@ class QuizController extends Controller
             $userID = Auth::id();
             // Get quiz table data with subject data
             $quiz = DB::table('quiz')
-            ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.items','quiz.time_limit', 'quiz.group_id','subject.subject_name', 'game_mode.gamemode_name')
+            ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.items','quiz.time_limit', 'quiz.user_id', 'quiz.group_id','subject.subject_name', 'game_mode.gamemode_name')
             ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
             ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
             ->orderBy('quiz.quiz_id', 'asc')
@@ -107,20 +107,63 @@ class QuizController extends Controller
         ->select('question_type.type_id', 'question_type.type_name', 'question_type.gamemode_id')
         ->join('game_mode', 'question_type.gamemode_id', '=','game_mode.gamemode_id')
         ->get();
+        $quesCount = DB::table('question_bank')
+        ->where('quiz_id', '=', $quizID)
+        ->count();
 
         //Find first question based on ques no and quiz ID
         $currQues = DB::table('question_bank')
         ->where('ques_no','=', 1)
         ->where('quiz_id','=', $quizID)
-        ->select('type_id', 'ques_id')
+        ->select('type_id', 'ques_id', 'question')
         ->first();
+        
+        $currQuesAns = DB::table('answer_bank')
+        ->where('ques_id', '=', $currQues->ques_id)
+        ->orderBy('ans_no', 'asc')
+        ->select('answer', 'ans_no', 'correct')
+        ->get();
 
         //Put necessary sessions for future use
         Session::put('quesNo', 1);
         Session::put('quizID', $quizID);
         Session::put('quesID', $currQues->ques_id);
 
-        return view('quizeditor')->with(compact('quiz', 'currQuiz', 'currQues', 'groups', 'gamemodes', 'subjects', 'questype'));
+        return view('quizeditor')->with(compact('quiz', 'currQuiz', 'currQues', 'groups', 'gamemodes', 'subjects', 'questype', 'quesCount', 'currQuesAns'));
+    }
+
+    //Used to delete a quiz
+    public function deleteQuiz($passQuizID) {
+        $countQues = DB::table('question_bank')
+        ->where('quiz_id','=', $passQuizID)
+        ->count();
+
+        for ($i = 1; $i <= $countQues; $i++) {
+            $checkQuestion = Question::where('ques_no','=', $i)->where('quiz_id', '=', $passQuizID)->first();
+            $getQuesID = Question::where('ques_no','=', $i)->where('quiz_id', '=', $passQuizID)->value('ques_id');
+            $delAns = DB::table('answer_bank')->where('ques_id','=', $getQuesID)->delete();
+        }
+
+        $delAns = DB::table('answer_bank')
+        ->where('ques_id','=', $getQuesID)
+        ->delete();
+
+        $delQues = DB::table('question_bank')
+        ->where('quiz_id','=', $passQuizID)
+        ->delete();
+
+        $delQuiz = DB::table('quiz')
+        ->where('quiz.quiz_id','=',$passQuizID)
+        ->delete();
+
+        if ($delQuiz) {
+            Session::flash('success', 'Quiz has been deleted successfully!');
+            return redirect()->route('managequiz');
+        }
+        else {
+            Session::flash('fail', 'Failed to delete quiz.');
+            return redirect()->route('managequiz');
+        }
     }
 
     //Used to display quiz editor via manage quiz tab
@@ -146,15 +189,24 @@ class QuizController extends Controller
         ->select('question_type.type_id', 'question_type.type_name', 'question_type.gamemode_id')
         ->join('game_mode', 'question_type.gamemode_id', '=','game_mode.gamemode_id')
         ->get();
+        $quesCount = DB::table('question_bank')
+        ->where('quiz_id', '=', $passQuizID)
+        ->count();
 
         //Update necessary sessions if it doesn't already exist
         if (!Session::has('quesNo') || !Session::has('quizID') || !Session::has('quesID')) {
-            //Find question ID
+            //Find question ID, question type and question
             $currQues = DB::table('question_bank')
             ->where('ques_no','=', 1)
             ->where('quiz_id','=', $passQuizID)
-            ->select('type_id', 'ques_id')
+            ->select('type_id', 'ques_id', 'question')
             ->first();
+            //Get current question's answers
+            $currQuesAns = DB::table('answer_bank')
+            ->where('ques_id', '=', $currQues->ques_id)
+            ->orderBy('ans_no', 'asc')
+            ->select('answer', 'ans_no', 'correct')
+            ->get();
 
             Session::put('quesNo', 1);
             Session::put('quizID', $passQuizID);
@@ -165,12 +217,18 @@ class QuizController extends Controller
             $currQues = DB::table('question_bank')
             ->where('ques_no','=', Session::get('quesNo'))
             ->where('quiz_id','=', $passQuizID)
-            ->select('type_id', 'ques_id')
+            ->select('type_id', 'ques_id', 'question')
             ->first();
             Session::put('quesID', $currQues->ques_id);
+            //Get current question's answers if exists
+            $currQuesAns = DB::table('answer_bank')
+            ->where('ques_id', '=', $currQues->ques_id)
+            ->orderBy('ans_no', 'asc')
+            ->select('answer', 'ans_no', 'correct')
+            ->get();
         }
 
-        return view('quizeditor')->with(compact('quiz', 'currQuiz', 'currQues', 'groups', 'gamemodes', 'subjects', 'questype'));
+        return view('quizeditor')->with(compact('quiz', 'currQuiz', 'currQues', 'groups', 'gamemodes', 'subjects', 'questype', 'quesCount', 'currQuesAns'));
     }
 
     public function updateQuiz(Request $request){
@@ -189,26 +247,48 @@ class QuizController extends Controller
         if($checkQuiz){
             $checkQuiz->quiz_title = $request->update_quiz_title;
             $checkQuiz->quiz_summary = $request->update_quiz_desc;
+            //Update question type
+            //Game mode is either 1 or 3
+            if ($request->update_gamemode_id == 1 && $checkQuiz->gamemode_id != $request->update_gamemode_id) {
+                //Find the number of questions in the database to edit if
+                $countNumQues = DB::table('question_bank')
+                ->where('quiz_id', '=', Session::get('quizID'))
+                ->count();
+                //Replace all unsupported gamemode types to the default supported type, also reset all question titles
+                for ($i = 1; $i <= $countNumQues; $i++) {
+                    //Check for question type
+                    $checkQuestion = Question::where('ques_no','=', $i)->where('quiz_id', '=', Session::get('quizID'))->first();
+                    $getQuesID = Question::where('ques_no','=', $i)->where('quiz_id', '=', Session::get('quizID'))->value('ques_id');
+                    if ($checkQuestion->type_id != 1 || $checkQuestion->type_id != 2) {
+                        //Update question type if gamemode ID does not match
+                        $checkQuestion->type_id = 1;
+                        $checkQuestion->question = NULL;
+                        $checkQuestion->save();
+                        $delAns = DB::table('answer_bank')->where('ques_id','=', $getQuesID)->delete();
+                    }
+                }
+            }
+            //Game mode is either 2 or 3
+            else if ($request->update_gamemode_id == 2 && $checkQuiz->gamemode_id != $request->update_gamemode_id) {
+                //Find the number of questions in the database to edit if
+                $countNumQues = DB::table('question_bank')
+                ->where('quiz_id', '=', Session::get('quizID'))
+                ->count();
+                //Replace all unsupported gamemode types to the default supported type, also reset all question titles
+                for ($i = 1; $i <= $countNumQues; $i++) {
+                    //Check for question type
+                    $checkQuestion = Question::where('ques_no','=', $i)->where('quiz_id', '=', Session::get('quizID'))->first();
+                    $getQuesID = Question::where('ques_no','=', $i)->where('quiz_id', '=', Session::get('quizID'))->value('ques_id');
+                    if ($checkQuestion->type_id != 3 || $checkQuestion->type_id != 4) {
+                        //Update question type if gamemode ID does not match
+                        $checkQuestion->type_id = 3;
+                        $checkQuestion->question = NULL;
+                        $checkQuestion->save();
+                        $delAns = DB::table('answer_bank')->where('ques_id','=', $getQuesID)->delete();
+                    }
+                }
+            }
             $checkQuiz->gamemode_id = $request->update_gamemode_id;
-            //update question type automatically
-            if ($request->update_gamemode_id == 1 || $request->update_gamemode_id == 3) {
-                $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where( 'quiz_id', '=', Session::get('quizID'))->first();
-                //Update question type
-                if($checkQuestion){
-                    $checkQuestion->type_id = 1;
-            
-                    $checkQuestion->save();
-                }
-            }
-            else if ($request->update_gamemode_id == 2) {
-                $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where( 'quiz_id', '=', Session::get('quizID'))->first();
-                //Update question type
-                if($checkQuestion){
-                    $checkQuestion->type_id = 3;
-            
-                    $checkQuestion->save();
-                }
-            }
             $checkQuiz->group_id = $request->update_group_id;
             $checkQuiz->items = $request->update_items;
             $checkQuiz->subject_id = $request->update_subject_id;
@@ -228,7 +308,7 @@ class QuizController extends Controller
         //Return message if quiz not found
         }else {
             Session::flash('fail','Quiz does not exist.');
-            return redirect('managequiz');
+            return redirect()->route('managequiz');
         } 
     }
 
@@ -238,14 +318,17 @@ class QuizController extends Controller
         //Update question type
         if($checkQuestion){
             $checkQuestion->type_id = $request->question_type;
-            
+            //Reset answers. Leave question title untouched.
+            $getQuesID = Question::where('ques_no','=', Session::get('quesNo'))->where('quiz_id', '=', Session::get('quizID'))->value('ques_id');
+            $delAns = DB::table('answer_bank')->where('ques_id','=', $getQuesID)->delete();
+
             $res = $checkQuestion->save();
 
             if ($res) {
-                return redirect()->route('editquiz', Session::get('quizID'))->with('success', 'Question type updated.');
+                return redirect()->route('editquiz', Session::get('quizID'));
             }
             else {
-                return redirect()->route('editquiz', Session::get('quizID'))->with('fail', 'Question type failed to update.');
+                return redirect()->route('editquiz', Session::get('quizID'));
             }
         }
     }
@@ -261,9 +344,10 @@ class QuizController extends Controller
             if ($res) {
                 for ($i = 1; $i <= 4; $i++) {
                     $checkAnswer = Answer::where('ques_id', '=', Session::get('quesID'))->where('ans_no', '=' , $i)->first();
+                    //If question exists, update
                     if($checkAnswer) {
                         $checkAnswer->ques_id = Session::get('quesID');
-                        //Values are 1, 2, 3, 4. If it matches with the loop, set as such.
+                        //Values are 1-4. If it matches with the loop, set as such.
                         if ($request->correct == $i) {
                             $checkAnswer->correct = 1;
                         }
@@ -288,10 +372,11 @@ class QuizController extends Controller
                         $checkAnswer->ans_no = $i;
                         $checkAnswer->save(); 
                     }
+                    //If not, create a new answer bank
                     else {
                         $newAns = new Answer();
                         $newAns->ques_id = Session::get('quesID');
-                        //Values are 1, 2, 3, 4. If it matches with the loop, set as such.
+                        //Values are 1-4. If it matches with the loop, set as such.
                         if ($request->correct == $i) {
                             $newAns->correct = 1;
                         }
@@ -322,23 +407,221 @@ class QuizController extends Controller
         }
     }
 
+    public function saveCard(Request $request) {
+        //Check if question exists in database
+        $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where( 'quiz_id', '=', Session::get('quizID'))->first();
+        if($checkQuestion) {
+            $checkQuestion->question = $request->question_title;
+            //Save question info
+            $res = $checkQuestion->save();
+            if ($res) {
+                for ($i = 1; $i <= 9; $i++) {
+                    $checkAnswer = Answer::where('ques_id', '=', Session::get('quesID'))->where('ans_no', '=' , $i)->first();
+                    //If question exists, update
+                    if($checkAnswer) {
+                        $checkAnswer->ques_id = Session::get('quesID');
+                        //Values are 1-9. If it matches with the loop, set as such.
+                        if ($request->correct == $i) {
+                            $checkAnswer->correct = 1;
+                        }
+                        else {
+                            $checkAnswer->correct = 0;
+                        }
+                        switch($i) {
+                            case '1':                        
+                                $tempAns = $request->answer1;
+                                break;
+                            case '2':
+                                $tempAns = $request->answer2;
+                                break;
+                            case '3':
+                                $tempAns = $request->answer3;
+                                break;
+                            case '4':
+                                $tempAns = $request->answer4;
+                                break;
+                            case '5':
+                                $tempAns = $request->answer5;
+                                break;
+                            case '6':
+                                $tempAns = $request->answer6;
+                                break;
+                            case '7':
+                                $tempAns = $request->answer7;
+                                break;
+                            case '8':
+                                $tempAns = $request->answer8;
+                                break;
+                            case '9':
+                                $tempAns = $request->answer9;
+                                break;
+                        }
+                        $checkAnswer->answer = $tempAns;
+                        $checkAnswer->ans_no = $i;
+                        $checkAnswer->save(); 
+                    }
+                    //If not, create a new answer bank
+                    else {
+                        $newAns = new Answer();
+                        $newAns->ques_id = Session::get('quesID');
+                        //Values are 1-9. If it matches with the loop, set as such.
+                        if ($request->correct == $i) {
+                            $newAns->correct = 1;
+                        }
+                        else {
+                            $newAns->correct = 0;
+                        }
+                        switch($i) {
+                            case '1':                        
+                                $tempAns = $request->answer1;
+                                break;
+                            case '2':
+                                $tempAns = $request->answer2;
+                                break;
+                            case '3':
+                                $tempAns = $request->answer3;
+                                break;
+                            case '4':
+                                $tempAns = $request->answer4;
+                                break;
+                            case '5':
+                                $tempAns = $request->answer5;
+                                break;
+                            case '6':
+                                $tempAns = $request->answer6;
+                                break;
+                            case '7':
+                                $tempAns = $request->answer7;
+                                break;
+                            case '8':
+                                $tempAns = $request->answer8;
+                                break;
+                            case '9':
+                                $tempAns = $request->answer9;
+                        }
+                        $newAns->answer = $tempAns;
+                        $newAns->ans_no = $i;
+                        $newAns->save(); 
+                    }
+                }
+                return redirect()->route('editquiz', Session::get('quizID'));
+            }   
+        }
+    }
+
+    public function saveSelMultiAns(Request $request) {
+        //Check if question exists in database
+        $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where( 'quiz_id', '=', Session::get('quizID'))->first();
+        if($checkQuestion) {
+            $checkQuestion->question = $request->question_title;
+            //Save question info
+            $res = $checkQuestion->save();
+            if ($res) {
+                for ($i = 1; $i <= 4; $i++) {
+                    $checkAnswer = Answer::where('ques_id', '=', Session::get('quesID'))->where('ans_no', '=' , $i)->first();
+                    //If question exists, update
+                    if($checkAnswer) {
+                        $checkAnswer->ques_id = Session::get('quesID');
+                        //Values are 1-4. If it matches with the loop, set as such.
+                        switch($i) {
+                            case '1':                        
+                                $tempAns = $request->answer1;
+                                if ($request->correct1 == 1) {
+                                    $checkAnswer->correct = 1;
+                                }
+                                else {
+                                    $checkAnswer->correct = 0;
+                                }
+                                break;
+                            case '2':
+                                $tempAns = $request->answer2;
+                                if ($request->correct2 == 1) {
+                                    $checkAnswer->correct = 1;
+                                }
+                                else {
+                                    $checkAnswer->correct = 0;
+                                }
+                                break;
+                            case '3':
+                                $tempAns = $request->answer3;
+                                if ($request->correct3 == 1) {
+                                    $checkAnswer->correct = 1;
+                                }
+                                else {
+                                    $checkAnswer->correct = 0;
+                                }
+                                break;
+                            case '4':
+                                $tempAns = $request->answer4;
+                                if ($request->correct4 == 1) {
+                                    $checkAnswer->correct = 1;
+                                }
+                                else {
+                                    $checkAnswer->correct = 0;
+                                }
+                                break;
+                        }
+                        $checkAnswer->answer = $tempAns;
+                        $checkAnswer->ans_no = $i;
+                        $checkAnswer->save(); 
+                    }
+                    //If not, create a new answer bank
+                    else {
+                        $newAns = new Answer();
+                        $newAns->ques_id = Session::get('quesID');
+                        //Values are 1-4. If it matches with the loop, set as such.
+                        switch($i) {
+                            case '1':                        
+                                $tempAns = $request->answer1;
+                                if ($request->correct1 == 1) {
+                                    $newAns->correct = 1;
+                                }
+                                else {
+                                    $newAns->correct = 0;
+                                }
+                                break;
+                            case '2':
+                                $tempAns = $request->answer2;
+                                if ($request->correct2 == 1) {
+                                    $newAns->correct = 1;
+                                }
+                                else {
+                                    $newAns->correct = 0;
+                                }
+                                break;
+                            case '3':
+                                $tempAns = $request->answer3;
+                                if ($request->correct3 == 1) {
+                                    $newAns->correct = 1;
+                                }
+                                else {
+                                    $newAns->correct = 0;
+                                }
+                                break;
+                            case '4':
+                                $tempAns = $request->answer4;
+                                if ($request->correct4 == 1) {
+                                    $newAns->correct = 1;
+                                }
+                                else {
+                                    $newAns->correct = 0;
+                                }
+                                break;
+                        }
+                        $newAns->answer = $tempAns;
+                        $newAns->ans_no = $i;
+                        $newAns->save(); 
+                    }
+                }
+                return redirect()->route('editquiz', Session::get('quizID'));
+            }   
+        }
+    }
+
     public function prevQuestion() {
         //decrease session number
         Session::put('quesNo', Session::get('quesNo') - 1);
-        //Check for question type
-        $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where('quiz_id', '=', Session::get('quizID'))->first();
-        //Get gamemode ID
-        $gamemodeID = DB::table('quiz')->where('quiz_id', '=', Session::get('quizID'))->value('gamemode_id');
-        if ($checkQuestion) {
-            //Update question type if gamemode ID does not match
-            if($gamemodeID == 1) {
-                $checkQuestion->type_id = 1;
-            }else if ($gamemodeID == 2) {
-                $checkQuestion->type_id = 3;
-            }
-            $checkQuestion->save();
-            return redirect()->route('editquiz', Session::get('quizID'));
-        }
+        return redirect()->route('editquiz', Session::get('quizID'));
     }
 
     public function nextQuestion(){
@@ -353,13 +636,6 @@ class QuizController extends Controller
             return redirect()->route('add-question');
         }
         else {
-            //Update question type if gamemode ID does not match
-            if($gamemodeID == 1) {
-                $checkQuestion->type_id = 1;
-            }else if ($gamemodeID == 2) {
-                $checkQuestion->type_id = 3;
-            }
-            $checkQuestion->save();
             return redirect()->route('editquiz', Session::get('quizID'));
         }
     }

@@ -20,7 +20,7 @@
                             <p>No quizzes for your group.</p>
                         @else
                             <p>Let's make a new quiz for students! </p>
-                            <form action="{{route('createquiz1')}}">
+                            <form action="{{route('createquiz')}}">
                                 <button type="submit" class="btn btn-primary">
                                     Create a New Quiz
                                 </button>

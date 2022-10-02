@@ -79,8 +79,13 @@
                         <div class="row mb-3">
                             <label for="update_time_limit" class="col-md-4 col-form-label text-md-end">Time Limit: </label>
                             <div class="col-8">
-                                <input id="update_time_limit" name="update_time_limit" type="number" step="1" required="required" min="30" max="180"
+                                @if($currQuiz->gamemode_id == 2 || $currQuiz->gamemode_id == 3)
+                                <input id="update_time_limit" name="update_time_limit" type="number" step="1" required="required" min="30" max="300"
+                                value="{{$currQuiz -> time_limit}}" class="form-control" readOnly="true">  
+                                @else
+                                <input id="update_time_limit" name="update_time_limit" type="number" step="1" required="required" min="30" max="300"
                                 value="{{$currQuiz -> time_limit}}" class="form-control">  
+                                @endif
                             </div>
                         </div>
 
@@ -97,23 +102,18 @@
 
                         <div class="row mb-0">
                             <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Save Settings') }}
-                                </button>
+                                @if($currQuiz->gamemode_id == 3)
+                                    <button type="submit" onclick="return confirm('Changing game mode from Mixed will reset all unrelated questions.\nProceed?')" class="btn btn-primary">
+                                        {{ __('Save Settings') }}
+                                    </button> 
+                                @else
+                                    <button type="submit" class="btn btn-primary">
+                                        {{ __('Save Settings') }}
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <script>
-            function quesTypeSelect() {
-                let userSelection = document.getElementById("question-type");
-                userSelection.addEventListener("change", function() {
-                    
-                    location.reload();
-                })
-            }
-        </script>
-    </body>
-</html>

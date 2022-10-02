@@ -18,6 +18,6 @@ class GroupsController extends Controller
         Session::forget('quizID');
         Session::forget('quesNo');
         Session::forget('quesID');
-        return view("createquiz1")->with(compact('groups'))->with(compact('gamemodes'))->with(compact('subjects'));
+        return view("createquiz")->with(compact('groups'))->with(compact('gamemodes'))->with(compact('subjects'));
     }
 }

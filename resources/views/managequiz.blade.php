@@ -50,8 +50,13 @@
                                 @endif
                             @else
                                 @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
-                                    <td><a href= "{{route('editquiz', $quizView->quiz_id ) }}">Edit</td>
-                                    <td><a href="">Delete</td>
+                                    @if($quizView->user_id == Auth::id())
+                                        <td><a href= "{{route('editquiz', $quizView->quiz_id ) }}">Edit</td>
+                                        <td><a href="{{route('delete-quiz', $quizView->quiz_id) }}">Delete</td>
+                                    @else
+                                        <td>Only Creator can Edit</td>
+                                        <td>Only Creator can Delete </td>
+                                    @endif
                                 @else
                                     <td>Cannot Edit</td>
                                     <td>Cannot Delete </td>
@@ -69,7 +74,7 @@
         </div><br>
         <div class="row justify-content-center">
         @if (Auth::user()->role == 1)
-            <form action="{{route('createquiz1')}}">
+            <form action="{{route('createquiz')}}">
                 <button type="submit" class="btn btn-primary">
                     Create a New Quiz
                 </button>
