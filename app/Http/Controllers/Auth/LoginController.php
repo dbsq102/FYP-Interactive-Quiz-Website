@@ -21,6 +21,11 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
 
+    public function setSession() {
+        $email = $request->email;
+        $username = User::where('email','=',$email)->first();
+    }
+
     /**
      * Where to redirect users after login.
      *
