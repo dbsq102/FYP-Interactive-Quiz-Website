@@ -1,6 +1,10 @@
 body {
-   background: rgb(126, 253, 143);
+   background-image: url(../images/background.jpg);
+   background-size:auto;
    height: 100%;
+   width: 100%;
+   margin: 0px;
+   overflow-x: hidden;
 }
 
 #menu {
@@ -69,10 +73,7 @@ body {
 .quiz-table {
    font-family: Arial;
    border-collapse: collapse;
-   width: 1000px;
-   padding:50px;
    font: 14px Arial, Helvetica, sans-serif, bold;
-   margin: 0 auto;
    text-align: center;
 }
  
@@ -112,8 +113,28 @@ body {
 .sidebar {
    float:left;
    width:30%;
-   border-right-style: solid;
+   margin-left:20px;
+}
+
+.quizeditor {
    border-color: blueviolet;
+   border-style: solid;
+   border-width: 10px;
+   border-radius: 25px;
+   height: 800px;
+   background-color: white;
+}
+
+.quizeditor-content {
+   padding:30px;
+}
+
+.sidebar-header {
+   font-size: 20px;
+   color: white;
+   background-color: blueviolet;
+   padding: 20px;
+   font-weight: 900;
 }
 
 .previous{
@@ -146,7 +167,7 @@ body {
 
 .playquiz {
    background-color: #ffffff;
-   padding: 30px;
+   padding: 40px;
    border-radius: 20px;
    border-color: blueviolet;
    border-style:solid;
@@ -191,4 +212,155 @@ body {
   width: 0;
   background-color: #d05656;
   box-sizing: border-box;
+}
+
+.ansCard{
+   position: relative;
+   text-align: center;
+   width: 33%;
+   display: inline;
+}
+
+.ansCard2 {
+   position: relative;
+   text-align: center;
+   width: 33%;
+   display: inline;
+}
+
+.cardPlay {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+}
+
+.hiddenText {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+}
+
+.ansCard2 a:hover{
+   text-decoration: none;
+}
+
+.ansButton1 {
+   background-color: green;
+   padding:32px 80px;
+   border-width: 5px;
+   border-style: solid;
+   border-radius: 25px;
+   border-color: darkgreen;
+   width: 40%;
+   margin-right: 20px;
+   color: white;
+   text-align: center;
+   text-decoration: none;
+   outline: none;
+   display: inline-block;
+   font-size:48px;
+}
+
+a:hover {
+   outline: none;
+   text-decoration: none;
+}
+
+.ansButton1:hover {
+   color: white;
+   font-weight:600;
+}
+
+.ansButton2 {
+   background-color: blue;
+   padding:32px 80px;
+   border-width: 5px;
+   border-style: solid;
+   border-radius: 25px;
+   border-color: darkblue;
+   width: 40%;
+   color: white;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size:48px;
+}
+
+.ansButton2:hover {
+   color: white;
+   font-weight:600;
+}
+
+.ansButton3 {
+   background-color: red;
+   padding:32px 80px;
+   border-width: 5px;
+   border-style: solid;
+   border-radius: 25px;
+   border-color: darkred;
+   margin-right: 20px;
+   width: 40%;
+   color: white;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size:48px;
+}
+
+.ansButton3:hover {
+   color: white;
+   font-weight:600;
+}
+
+.ansButton4 {
+   background-color: yellow;
+   padding:32px 80px;
+   border-width: 5px;
+   border-style: solid;
+   border-radius: 25px;
+   border-color: gold;
+   width: 40%;
+   color: black;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size:48px;
+}
+.ansButton4:hover {
+   color: white;
+   font-weight:600;
+}
+
+.queseditor {
+   background-color: #ffffff;
+   height: 700px;
+   margin-right:50px;
+   margin-left:600px;
+   border-radius: 20px;
+   border-color: blueviolet;
+   border-style:solid;
+   border-width: 10px;
+}
+
+.queseditor-header {
+   font-size: 32px;
+   color: white;
+   background-color: blueviolet;
+   padding: 20px;
+   font-weight: 900;
+}
+
+.queseditor-content {
+   padding:30px;
+}
+
+.btn-primary {
+   background-color: blueviolet;
+   border-color: rgb(55, 0, 107);
+}
+
+.btn-primary:hover {
+   background-color: rgb(55, 0, 107);
 }

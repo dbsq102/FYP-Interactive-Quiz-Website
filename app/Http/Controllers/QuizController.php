@@ -19,7 +19,8 @@ class QuizController extends Controller
             $userID = Auth::id();
             // Get quiz table data with subject data
             $quiz = DB::table('quiz')
-            ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.items','quiz.time_limit', 'quiz.user_id', 'quiz.group_id','subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
+            ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.items','quiz.time_limit', 'quiz.user_id', 
+            'quiz.group_id','subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
             ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
             ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
             ->orderBy('quiz.quiz_id', 'asc')
@@ -298,17 +299,17 @@ class QuizController extends Controller
             $res = $checkQuiz->save();
 
             if($res){
-                Session::flash('success', 'Quiz has been updated successfully!');
+                Session::flash('message', 'Quiz has been updated successfully!');
                 return redirect()->route('editquiz', Session::get('quizID'));
             }
 
             else{
-                Session::flash('fail','Unable to update quiz.');
+                Session::flash('message','Unable to update quiz.');
                 return redirect()->route('editquiz', Session::get('quizID'));
             }
         //Return message if quiz not found
         }else {
-            Session::flash('fail','Quiz does not exist.');
+            Session::flash('message','Quiz does not exist, somehow.');
             return redirect()->route('managequiz');
         } 
     }
@@ -326,9 +327,11 @@ class QuizController extends Controller
             $res = $checkQuestion->save();
 
             if ($res) {
+                Session::flash('message','Question type updated successfully!');
                 return redirect()->route('editquiz', Session::get('quizID'));
             }
             else {
+                Session::flash('message','Question type failed to update.');
                 return redirect()->route('editquiz', Session::get('quizID'));
             }
         }
@@ -403,6 +406,7 @@ class QuizController extends Controller
                         $newAns->save(); 
                     }
                 }
+                Session::flash('message','Your question has been saved successfully!');
                 return redirect()->route('editquiz', Session::get('quizID'));
             }   
         }
@@ -505,6 +509,7 @@ class QuizController extends Controller
                         $newAns->save(); 
                     }
                 }
+                Session::flash('message', 'Your question has been saved successfully!');
                 return redirect()->route('editquiz', Session::get('quizID'));
             }   
         }
@@ -614,6 +619,7 @@ class QuizController extends Controller
                         $newAns->save(); 
                     }
                 }
+                Session::flash('message', 'Your question has been saved successfully!');
                 return redirect()->route('editquiz', Session::get('quizID'));
             }   
         }
@@ -641,6 +647,46 @@ class QuizController extends Controller
         }
     }
 
+    public function deleteQuestion() {
+        $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where('quiz_id', '=', Session::get('quizID'))->first();
+        $checkAns = Answer::where('ques_id','=', Session::get('quesID'));
+        //Delete answers first if they exist, if not, just delete question
+        if ($checkAns) {
+            $res = $checkAns->delete();
+            if ($res) {
+                //Delete question after
+                $res2 = $checkQuestion->delete();
+    
+                if ($res2) {
+                    //decrease session number
+                    Session::put('quesNo', Session::get('quesNo') - 1);
+                    Session::flash('message', 'Question deleted successfully.');
+                    return redirect()->route('editquiz', Session::get('quizID'));
+                } else {
+                    Session::flash('message', 'Failed to delete question.');
+                    return redirect()->route('editquiz', Session::get('quizID'));
+                }
+            } else {
+                Session::flash('message', 'Cannot delete answers.');
+                return redirect()->route('editquiz', Session::get('quizID'));
+            }
+        }
+        else {
+            //Delete question if answer does not exist
+            $res = $checkQuestion->delete();
+    
+            if ($res) {
+                //decrease session number
+                Session::put('quesNo', Session::get('quesNo') - 1);
+                Session::flash('message', 'Question deleted successfully.');
+                return redirect()->route('editquiz', Session::get('quizID'));
+            } else {
+                Session::flash('message', 'Failed to delete question.');
+                return redirect()->route('editquiz', Session::get('quizID'));
+            }
+        }
+    }
+
     public function addNewQuestion() {
         //Get most recent quiz's set gamemode
         $gamemodeID = DB::table('quiz')->where('quiz_id', '=', Session::get('quizID'))->value('gamemode_id');
@@ -658,11 +704,11 @@ class QuizController extends Controller
         $res = $newQues->save();
         
         if ($res) {
-            Session::flash('success','Question added successfully.');
+            Session::flash('message','Question added successfully.');
             return redirect()->route('editquiz', Session::get('quizID'));
         }
         else {
-            Session::flash('fail','Unable to add question.');
+            Session::flash('message','Unable to add question.');
             return redirect()->route('editquiz', Session::get('quizID'));
         }
     }

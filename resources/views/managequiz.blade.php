@@ -1,6 +1,6 @@
         @include('header')
         <br>
-        <div class="row justify-content-center">
+        <div align="center">
             <div class="display-table">
                 <!-- Check if quiz table is empty -->
                 @if(!empty($quiz))
@@ -39,7 +39,8 @@
                             @else
                                 <td>Yes</td>
                             @endif
-                            <td>Not yet implemented</td>
+                            <!--Count number of questions on the quiz-->
+                            <td>{{App\Models\Question::where('quiz_id', '=', $quizView->quiz_id)->count();}}</td>
                             <!-- Likewise, if group_id is null, display no, otherwise yes-->
                             @if (Auth::user()->role == 1)
                                 @if(!$quizView -> group_id)

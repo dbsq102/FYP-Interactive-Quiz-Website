@@ -40,12 +40,16 @@ Route::middleware('auth')->group(function(){
     Route::get('/save-multi-choice', [QuizController::class, 'saveMultiChoice'])->name('save-multi-choice');
     Route::get('/save-sel-multi-ans', [QuizController::class, 'saveSelMultiAns'])->name('save-sel-multi-ans');
     Route::get('/save-card', [QuizController::class, 'saveCard'])->name('save-card');
-    //Move to prev/next questions
+    //Move to prev/next questions, also delete
     Route::post('/next-question', [QuizController::class, 'nextQuestion'])->name('next-question');
     Route::post('/prev-question', [QuizController::class, 'prevQuestion'])->name('prev-question');
+    Route::post('/delete-question', [QuizController::class, 'deleteQuestion'])->name('delete-question');
     //Add a new question
     Route::get('/add-question', [QuizController::class, 'addNewQuestion'])->name('add-question');
     //Attempt a quiz
     Route::get('/standby/{passQuizID}', [PlayController::class, 'standbyView'])->name('standby');
     Route::get('/play-quiz/{passQuizID}', [PlayController::class, 'playView'])->name('play-quiz');
+    //Check Answer
+    Route::get('/check-answer/{passCorrect}', [PlayController::class, 'checkAnswer'])->name('check-answer');
+    Route::get('/finish-quiz', [PlayController::class, 'finishQuiz'])->name('finish-quiz');
 });
