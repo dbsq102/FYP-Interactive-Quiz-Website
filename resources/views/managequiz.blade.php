@@ -13,6 +13,7 @@
                         <th>Game Mode</th>
                         <th>Time (m)</th>
                         <th>Items Allowed?</th>
+                        <th>No. of Questions</th>
                         @if (Auth::user()->role == 0)
                             <th>Play</th>
                         @else
@@ -38,6 +39,7 @@
                             @else
                                 <td>Yes</td>
                             @endif
+                            <td>Not yet implemented</td>
                             <!-- Likewise, if group_id is null, display no, otherwise yes-->
                             @if (Auth::user()->role == 1)
                                 @if(!$quizView -> group_id)

@@ -137,7 +137,16 @@ body {
 
 .standby {
    background-color: #ffffff;
-   padding: 50px;
+   padding: 30px;
+   border-radius: 20px;
+   border-color: blueviolet;
+   border-style:solid;
+   border-width: 10px;
+}
+
+.playquiz {
+   background-color: #ffffff;
+   padding: 30px;
    border-radius: 20px;
    border-color: blueviolet;
    border-style:solid;
@@ -146,4 +155,40 @@ body {
 
 .link:hover {
    color:rgb(4, 0, 255);
+}
+
+
+.numbers {
+	display: block;
+	font-family: sans-serif;
+	font-size: 60px;
+	line-height: 1.5;
+	margin: 0 auto;
+}
+
+.name {
+	font-family: sans-serif;
+	font-size: 20px;
+	line-height: 1.5;
+	margin: 0 auto;
+	text-align: center;
+	position: relative;
+	top: -25px;
+}
+
+#progressBar {
+  width: 90%;
+  margin: 10px auto;
+  height: 22px;
+  background-color: #efd0d0;
+}
+
+#progressBar div {
+  height: 100%;
+  text-align: right;
+  padding: 0 10px;
+  line-height: 22px; /* same as #progressBar height if we want text middle aligned */
+  width: 0;
+  background-color: #d05656;
+  box-sizing: border-box;
 }

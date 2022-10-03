@@ -47,4 +47,5 @@ Route::middleware('auth')->group(function(){
     Route::get('/add-question', [QuizController::class, 'addNewQuestion'])->name('add-question');
     //Attempt a quiz
     Route::get('/standby/{passQuizID}', [PlayController::class, 'standbyView'])->name('standby');
+    Route::get('/play-quiz/{passQuizID}', [PlayController::class, 'playView'])->name('play-quiz');
 });

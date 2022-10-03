@@ -24,6 +24,7 @@ class QuizController extends Controller
             ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
             ->orderBy('quiz.quiz_id', 'asc')
             ->get();
+
             Session::forget('quizID');
             Session::forget('quesNo');
             Session::forget('quesID');
