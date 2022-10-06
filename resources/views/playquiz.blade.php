@@ -100,9 +100,10 @@
         @if($currQues->type_id == 3)
             <!--Script for card flipping questions-->
             @if(!Session::has('ansPhase'))
-                <script>
+                <script> 
                 //Phase 1, give 7 seconds to memorize card
                 $(document).ready(function(){
+
                     //Initial countdown timer
                     var timeleft = 7;
                     var timer = setInterval(function(){
@@ -143,7 +144,10 @@
                         clearInterval(timer);
                         alert("Uh oh, you ran out of time!");
                         window.location.href="{{route('check-answer', 0) }}";
-                    } else {
+                    } else {     
+                        $(document).on("click", "a", function() {
+                            clearInterval(timer);
+                        });
                         document.getElementById("countdown").innerHTML = timeleft + " seconds to choose a card";
                     }
                     timeleft -= 1;
@@ -169,9 +173,8 @@
         @endif
         @if($currQues->type_id == 4)
         <!--Script for quickfire questions-->
-        <script>
-        $(document).ready(function(){
-            //COUNTDOWN TIMER
+        <script>            
+            //Countdown timer
             var timeleft = 5;
             var timer = setInterval(function(){
             if(timeleft <= 0){
@@ -179,12 +182,16 @@
                 alert("Uh oh, you ran out of time!");
                 window.location.href="{{route('check-answer', 0) }}";
             } else {
+                $(document).on("click", "a", function() {
+                    clearInterval(timer);
+                });
                 document.getElementById("countdown").innerHTML = timeleft + " seconds to answer";
             }
             timeleft -= 1;
             }, 1000);
+            
 
-            //COUNTDOWN BAR
+            //Countdown bar
 
             function progress(timeleft, timetotal, $element) {
                 var progressBarWidth = timeleft * $element.width() / timetotal;
@@ -197,8 +204,7 @@
             };
             //adjust these numbers to match time set
             //must be in seconds
-            progress(5, 5, $('#progressBar'));
-        });    
+            progress(5, 5, $('#progressBar')); 
         </script>
         @endif
     </body>

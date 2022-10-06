@@ -335,7 +335,7 @@ a:hover {
 
 .queseditor {
    background-color: #ffffff;
-   height: 700px;
+   height: 800px;
    margin-right:50px;
    margin-left:600px;
    border-radius: 20px;
@@ -346,6 +346,7 @@ a:hover {
 
 .queseditor-header {
    font-size: 32px;
+   width: 100%;
    color: white;
    background-color: blueviolet;
    padding: 20px;
@@ -363,4 +364,8 @@ a:hover {
 
 .btn-primary:hover {
    background-color: rgb(55, 0, 107);
+}
+
+.recentQuiz {
+   padding:20px;
 }
