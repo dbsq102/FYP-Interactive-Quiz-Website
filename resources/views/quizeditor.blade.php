@@ -1,5 +1,4 @@
 @include('sidebar')
-        <br>
         <div class="queseditor" align="center">
             <div class ="queseditor-header">{{$currQuiz->quiz_title}}</div>
                 <div class="queseditor-content">
@@ -130,6 +129,7 @@
                                 {{ __('Next Question') }}
                             </button>
                         </form>
+                    <!-- Display if question type is multiple answers -->
                     @elseif($currQues->type_id == 2)
                         <form method="POST "action="{{route('save-sel-multi-ans')}}">
                             @csrf
@@ -234,7 +234,8 @@
                                 {{ __('Next Question') }}
                             </button>
                         </form>
-                    @elseif($currQues->type_id == 3)
+                    <!-- Display if question type has 9 answers -->
+                    @elseif($currQues->type_id == 3 || $currQues->type_id == 5)
                         <form method="POST "action="{{route('save-card')}}">
                             @csrf
                             <!--Display if question title exists-->
