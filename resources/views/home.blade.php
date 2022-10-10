@@ -4,9 +4,8 @@
             <div class="col-md-8">
                 <div class="card">
                     <!-- Shows create quiz shortcut if educator, available quizzes in group if student -->
-                    <!-- Student view -->
                     <div class="card-header">
-                        Welcome, {{Auth::user()->username }}
+                        Welcome, {{Auth::user()->username }}.
                     </div>
                     <div class="card-body">
                         @if (session('status'))
@@ -29,7 +28,6 @@
                     </div>
                 </div>
                 <br>
-                <!-- Educator view -->
                 <div class="card">
                     <div class="card-header">
                         Recently Available Quizzes
@@ -45,14 +43,14 @@
                                 <td>{{$quizView -> gamemode_name}} </td>
                                 @if (Auth::user()->role == 0)
                                     @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
-                                        <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}">Attempt Quiz</td>
+                                        <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}"><img src="{{asset('/images/play.png')}}" style="width:20px"></td>
                                     @else
                                         <td>Private</td>
                                     @endif      
                                 @else
                                     @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
                                         @if($quizView->user_id == Auth::id())
-                                            <td><a class="link" href= "{{route('editquiz', $quizView->quiz_id ) }}">Edit</td>
+                                            <td><a class="link" href= "{{route('editquiz', $quizView->quiz_id ) }}"><img src="{{asset('/images/edit.png')}}" style="width:20px"></td>
                                         @else
                                             <td>Only Creator can Edit</td>
                                         @endif
@@ -69,6 +67,7 @@
                     <p>No quizzes available</p>
                     @endif
                 </div>
+                <br>
             </div>
         </div>
     </body>

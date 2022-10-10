@@ -51,15 +51,15 @@
                             @endif
                             @if (Auth::user()->role == 0)
                                 @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
-                                    <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}">Attempt Quiz</td>
+                                    <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}"><img src="{{asset('/images/play.png')}}" style="width:20px"></td>
                                 @else
                                     <td>Private</td>
                                 @endif
                             @else
                                 @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
                                     @if($quizView->user_id == Auth::id())
-                                        <td><a class="link" href= "{{route('editquiz', $quizView->quiz_id ) }}">Edit</td>
-                                        <td><a class="link" href="{{route('delete-quiz', $quizView->quiz_id) }}">Delete</td>
+                                        <td><a class="link" href= "{{route('editquiz', $quizView->quiz_id ) }}"><img src="{{asset('/images/edit.png')}}" style="width:20px"></td>
+                                        <td><a class="link" onclick="return confirm('Are you sure you want to delete this quiz?')"href="{{route('delete-quiz', $quizView->quiz_id) }}"><img src="{{asset('/images/delete.png')}}" style="width:20px"></td>
                                     @else
                                         <td>Only Creator can Edit</td>
                                         <td>Only Creator can Delete </td>

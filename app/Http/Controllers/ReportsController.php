@@ -57,6 +57,12 @@ class ReportsController extends Controller
             ->sum('score');
         } else {
             $history = NULL;
+            $countMath = NULL;
+            $countSci = NULL;
+            $countQuesMath = NULL;
+            $countQuesSci = NULL;
+            $sumMathScore = NULL;
+            $sumScienceScore = NULL;
         }
 
         return view('reports')->with(compact('history', 'countMath', 'countSci', 'countQuesMath', 'countQuesSci', 'sumMathScore', 'sumScienceScore'));

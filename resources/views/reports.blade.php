@@ -3,8 +3,6 @@
         <div class="report-container" align="center">
             <br>
             <h1>Reports for {{Auth::user()->username}}</h1><br>
-            {{$sumMathScore}}
-            {{$countQuesMath}}
             @if(Auth::user()->role == 0)
             <!-- Display all quiz attempts from user -->
             <table class="quiz-table">
@@ -12,7 +10,6 @@
                 <tr>
                     <th>Quiz Title</th>
                     <th>Date Taken</th>
-                    <th>Total Participants</th>
                     <th>Score</th>
                     <th>Charts</th>
                 </tr>
@@ -20,13 +17,12 @@
                     <tr>
                         <td>{{$attempts->quiz_title}}</td>
                         <td>{{$attempts->date_taken}}</td>
-                        <td>{{App\Models\Quiz::where('quiz_id', '=', $attempts->quiz_id)->count();}}</td>
                         <td>
                             <label for="score">{{$attempts->score}} / {{App\Models\Question::where('quiz_id', '=', $attempts->quiz_id)->count();}}</label>
                             <progress id="score" value="{{$attempts->score}}" max="{{App\Models\Question::where('quiz_id', '=', $attempts->quiz_id)->count();}}"></progress>
                         </td>
                         <td>
-                            <a href="Chart Page">Chart</a>
+                            <a href="Chart Page"><img src="{{asset('/images/chart.png')}}" style="width:20px"></a>
                         </td>
                     </tr>
                 @endforeach
@@ -50,8 +46,8 @@
         function drawChart() {
             var data = google.visualization.arrayToDataTable([
                 ["Subject", "No. of Quizzes", { role: "style" } ],
-                ["Science", <?= $countMath ?>, "green"],
-                ["Math", <?= $countSci ?>, "blue"]
+                ["Science", <?= $countSci ?>, "green"],
+                ["Math", <?= $countMath ?>, "blue"]
             ]);
 
             var view = new google.visualization.DataView(data);
