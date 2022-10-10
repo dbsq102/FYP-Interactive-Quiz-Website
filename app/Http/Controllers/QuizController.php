@@ -57,10 +57,12 @@ class QuizController extends Controller
 
         $res = $quiz->save();
         if($res){
-            return redirect()->route('add-quiz-view')->with('success', 'A new quiz has been added.');
+            Session::flash('message','Added a new quiz!');
+            return redirect()->route('add-quiz-view');
         }
         else {
-            return with('fail', 'Failed to add quiz.');
+            Session::flash('message','Failed to add quiz.');
+            return redirect()->route('managequiz');
         } 
     }
 

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\PlayController;
+use App\Http\Controllers\ReportsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,4 +53,14 @@ Route::middleware('auth')->group(function(){
     //Check Answer
     Route::get('/check-answer/{passCorrect}', [PlayController::class, 'checkAnswer'])->name('check-answer');
     Route::get('/finish-quiz', [PlayController::class, 'finishQuiz'])->name('finish-quiz');
+    //Groups related
+    Route::get('/groups-view/{passGroupID}', [GroupsController::class, 'groupsView'])->name('groups-view');
+    Route::get('/create-group-view', [GroupsController::class,'createGroupView'])->name('create-group-view');
+    Route::post('/create-group', [GroupsController::class, 'createGroup'])->name('create-group');
+    Route::get('/join-group/{passGroupID}', [GroupsController::class, 'joinGroup'])->name('join-group');
+    Route::post('/add-to-group/{passGroupID}', [GroupsController::class, 'addToGroup'])->name('add-to-group');
+    Route::get('/leave-group/{passUserID}', [GroupsController::class, 'leaveGroup'])->name('leave-group');
+    Route::get('/delete-group/{passGroupID}', [GroupsController::class, 'deleteGroup'])->name('delete-group');
+    //Reports related
+    Route::get('/reports-view', [ReportsController::class, 'reportsView'])->name('reports-view');
 });

@@ -424,3 +424,36 @@ a:hover {
    color:black;
    font-weight:900;
 }
+
+.group-container {
+   background-color: #ffffff;
+   margin-left:100px;
+   margin-right:100px;
+   border-radius: 20px;
+   border-color: blueviolet;
+   border-style:solid;
+   border-width: 10px;
+}
+
+.group-header {
+   font-size: 32px;
+   width: 100%;
+   color: white;
+   background-color: blueviolet;
+   padding: 20px;
+   font-weight: 900;
+}
+
+.group-content {
+   padding:30px;
+}
+
+.report-container {
+   background-color: #ffffff;
+   margin-left:100px;
+   margin-right:100px;
+   border-radius: 20px;
+   border-color: blueviolet;
+   border-style:solid;
+   border-width: 10px;
+}
