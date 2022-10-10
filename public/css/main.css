@@ -457,3 +457,9 @@ a:hover {
    border-style:solid;
    border-width: 10px;
 }
+
+.chart {
+   display:inline-block;
+   width:33%;
+   height:400px;
+}
