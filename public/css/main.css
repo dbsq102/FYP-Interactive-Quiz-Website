@@ -1,33 +1,63 @@
 body {
-    background: rgb(16, 228, 44);
+   background-image: url(../images/background.jpg);
+   background-size:auto;
+   height: 100%;
+   width: 100%;
+   margin: 0px;
+   overflow-x: hidden;
 }
 
 #menu {
-    background-color:blueviolet;
-    height: 70px;
-    float:center;
-    clear:both;
+   background-color:blueviolet;
+   height: 70px;
+   clear:both;
 }
 
 .nav {
+   background-color:blueviolet;
 	float: left;
+   height: 70px;
 	width: 150px;
 	display: block;
 	text-align: center;
 	color: #ffffff;
 	font-weight: bold;
-	padding-top: 15px;
+	padding-top: 20px;
 	font-size: 15px;
 }
 
+.nav:hover {
+   background-color: rgb(198, 137, 255);
+   color: rgb(4, 0, 255);
+   font-size: 102%;
+   font-weight: 900;
+}
+
 .nav-right {
+   background-color:blueviolet;
    float: right;
+   height: 70px;
    width: 300px;
    color: #ffffff;
 	font-weight: bold;
 	text-align: center;
-   padding-top: 15px;
+   padding-top: 20px;
    font-size: 15px;
+   margin-right: 20px;
+}
+
+.logout {
+   color: white;
+   height: 70px;
+   font-weight: bold;
+   padding: 24px;
+   padding-bottom: 29px;
+}
+
+.logout:hover {
+   background-color: rgb(198, 137, 255);
+   color: rgb(4, 0, 255);
+   font-size: 102%;
 }
 
 #menu p2 {
@@ -43,15 +73,13 @@ body {
 .quiz-table {
    font-family: Arial;
    border-collapse: collapse;
-   width: 750px;
-   padding:50px;
    font: 14px Arial, Helvetica, sans-serif, bold;
-   margin: 0 auto;
+   text-align: center;
 }
  
 .quiz-table td, #quiz-table th {
    border: 2px solid #ddd;
-   padding: 8px;
+   padding: 16px;
 }
  
 .quiz-table th {
@@ -85,8 +113,28 @@ body {
 .sidebar {
    float:left;
    width:30%;
-   border-right-style: solid;
+   margin-left:20px;
+}
+
+.quizeditor {
    border-color: blueviolet;
+   border-style: solid;
+   border-width: 10px;
+   border-radius: 25px;
+   height: 800px;
+   background-color: white;
+}
+
+.quizeditor-content {
+   padding:30px;
+}
+
+.sidebar-header {
+   font-size: 20px;
+   color: white;
+   background-color: blueviolet;
+   padding: 20px;
+   font-weight: 900;
 }
 
 .previous{
@@ -99,4 +147,313 @@ body {
    float:right;
    display:inline;
    margin-right: 50px;
+}
+
+.middle {
+   height: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.standby {
+   background-color: #ffffff;
+   padding: 30px;
+   border-radius: 20px;
+   border-color: blueviolet;
+   border-style:solid;
+   border-width: 10px;
+}
+
+.playquiz {
+   background-color: #ffffff;
+   padding: 40px;
+   border-radius: 20px;
+   border-color: blueviolet;
+   border-style:solid;
+   border-width: 10px;
+}
+
+.link:hover {
+   color:rgb(4, 0, 255);
+}
+
+
+.numbers {
+	display: block;
+	font-family: sans-serif;
+	font-size: 60px;
+	line-height: 1.5;
+	margin: 0 auto;
+}
+
+.name {
+	font-family: sans-serif;
+	font-size: 20px;
+	line-height: 1.5;
+	margin: 0 auto;
+	text-align: center;
+	position: relative;
+	top: -25px;
+}
+
+#progressBar {
+  width: 90%;
+  margin: 10px auto;
+  height: 22px;
+  background-color: #efd0d0;
+}
+
+#progressBar div {
+  height: 100%;
+  text-align: right;
+  padding: 0 10px;
+  line-height: 22px; /* same as #progressBar height if we want text middle aligned */
+  width: 0;
+  background-color: #d05656;
+  box-sizing: border-box;
+}
+
+.ansCard{
+   position: relative;
+   text-align: center;
+   width: 33%;
+   display: inline;
+}
+
+.ansCard2 {
+   position: relative;
+   text-align: center;
+   width: 33%;
+   display: inline;
+}
+
+.cardPlay {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   text-decoration: none;
+}
+
+.ansCard2 a:hover{
+   text-decoration: none;
+}
+
+.ansButton1 {
+   background-color: green;
+   padding:32px 80px;
+   border-width: 5px;
+   border-style: solid;
+   border-radius: 25px;
+   border-color: darkgreen;
+   width: 40%;
+   margin-right: 20px;
+   color: white;
+   text-align: center;
+   text-decoration: none;
+   outline: none;
+   display: inline-block;
+   font-size:48px;
+}
+
+a:hover {
+   outline: none;
+   text-decoration: none;
+}
+
+.ansButton1:hover {
+   color: white;
+   font-weight:600;
+}
+
+.ansButton2 {
+   background-color: blue;
+   padding:32px 80px;
+   border-width: 5px;
+   border-style: solid;
+   border-radius: 25px;
+   border-color: darkblue;
+   width: 40%;
+   color: white;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size:48px;
+}
+
+.ansButton2:hover {
+   color: white;
+   font-weight:600;
+}
+
+.ansButton3 {
+   background-color: red;
+   padding:32px 80px;
+   border-width: 5px;
+   border-style: solid;
+   border-radius: 25px;
+   border-color: darkred;
+   margin-right: 20px;
+   width: 40%;
+   color: white;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size:48px;
+}
+
+.ansButton3:hover {
+   color: white;
+   font-weight:600;
+}
+
+.ansButton4 {
+   background-color: yellow;
+   padding:32px 80px;
+   border-width: 5px;
+   border-style: solid;
+   border-radius: 25px;
+   border-color: gold;
+   width: 40%;
+   color: black;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size:48px;
+}
+.ansButton4:hover {
+   color: white;
+   font-weight:600;
+}
+
+.queseditor {
+   background-color: #ffffff;
+   height: 800px;
+   margin-right:50px;
+   margin-left:600px;
+   border-radius: 20px;
+   border-color: blueviolet;
+   border-style:solid;
+   border-width: 10px;
+}
+
+.queseditor-header {
+   font-size: 32px;
+   width: 100%;
+   color: white;
+   background-color: blueviolet;
+   padding: 20px;
+   font-weight: 900;
+}
+
+.queseditor-content {
+   padding:30px;
+}
+
+.btn-primary {
+   background-color: blueviolet;
+   border-color: rgb(55, 0, 107);
+}
+
+.btn-primary:hover {
+   background-color: rgb(55, 0, 107);
+}
+
+.recentQuiz {
+   padding:20px;
+}
+
+.flip-card-container {
+   display:inline-block;
+   width:33%;
+   background-color: transparent;
+   margin-right: 30px;
+   width:100px;
+   height:150px;
+   perspective: 1000px;
+}
+
+.flip-card-content {
+   position: relative;
+   width: 100%;
+   height: 100%;
+   text-align: center;
+   transition: transform 1s;
+   transform-style: preserve-3d;
+   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+ 
+.flip-card-container:hover .flip-card-content {
+   transform: rotateY(180deg);
+}
+ 
+.flip-card-front, .flip-card-back {
+   position: absolute;
+   height: 100%;
+   width: 100%;
+   -webkit-backface-visibility: hidden;
+   backface-visibility: hidden;
+}
+
+.flip-card-front {
+   background-color: #bbb;
+   color:black;
+}
+ 
+.flip-card-back {
+   background-color: white;
+   color: black;
+   border-style:solid;
+   border-radius: 10px;
+   border-color:black;
+   font-size: 32px;
+   transform: rotateY(180deg);
+}
+
+.container {
+   height:800px;
+}
+
+.cardLink {
+   text-decoration:none;
+   color:black;
+}
+
+.cardLink:hover {
+   color:black;
+   font-weight:900;
+}
+
+.group-container {
+   background-color: #ffffff;
+   margin-left:100px;
+   margin-right:100px;
+   border-radius: 20px;
+   border-color: blueviolet;
+   border-style:solid;
+   border-width: 10px;
+}
+
+.group-header {
+   font-size: 32px;
+   width: 100%;
+   color: white;
+   background-color: blueviolet;
+   padding: 20px;
+   font-weight: 900;
+}
+
+.group-content {
+   padding:30px;
+}
+
+.report-container {
+   background-color: #ffffff;
+   margin-left:100px;
+   margin-right:100px;
+   border-radius: 20px;
+   border-color: blueviolet;
+   border-style:solid;
+   border-width: 10px;
 }
