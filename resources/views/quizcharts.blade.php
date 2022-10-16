@@ -1,15 +1,11 @@
 @include('header')
         <br>
-        <div class="report-container" align="center">
-            <div class="report-header">Charts for Attempt of {{$quiz->quiz_title}}</div><br>
-            <div class="chart" id="quiz-linechart"></div>
+        <div class="report2-container" align="center">
+            <div class="report-header">{{$quiz->username}}'s Attempt of {{$quiz->quiz_title}}</div><br>
             <div class="chart" id="quiz-piechart"></div><br>
             <a class="btn btn-primary" href="{{route('reports-view')}}">Go Back</a><br><br>
         </div>
     </body>
-    <!--Script for linechart of question performance-->
-    <script>
-    </script>
     <!--script for piechart of correct/incorrect questions-->
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
@@ -20,7 +16,7 @@
         var data = google.visualization.arrayToDataTable([
           ['Correct', 'Number'],
           ['Correct', <?= $quiz->score?>],
-          ['Incorrect', 2]
+          ['Incorrect', <?= $countQues - $quiz->score?>]
         ]);
 
         var options = {

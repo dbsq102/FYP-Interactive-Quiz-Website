@@ -1,9 +1,9 @@
         @include('header')
         <br>
         <div class="sidebar">
-            <div class="quizeditor">   
+            <div class="sidebar-container">   
                 <div class="sidebar-header">Edit Quiz Sidebar (ID: {{Session::get('quizID')}})</div>
-                    <div class="quizeditor-content">
+                    <div class="sidebar-content">
                         <form method="POST" action="{{ route('updatequiz') }}">
                         @csrf
                             <!-- Quiz Title -->

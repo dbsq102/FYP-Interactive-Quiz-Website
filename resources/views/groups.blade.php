@@ -63,7 +63,7 @@
                     <h3>Recent Quizzes assigned to {{$userGroup->group_name}}</h3>
                     <div class="recentQuiz">
                         <table class='quiz-table'>
-                            <tr><th colspan='7'>Recent Quizzes Assigned to {{$userGroup->group_name}}<th></tr>
+                            <tr><th colspan='6'>Recent Quizzes Assigned to {{$userGroup->group_name}}<th></tr>
                             @if(!$quiz->isEmpty())
                                 <!-- First row -->
                                 <tr>
@@ -72,7 +72,6 @@
                                     <th>Summary</th>
                                     <th>Game Mode</th>
                                     <th>Time (m)</th>
-                                    <th>Items Allowed?</th>
                                     <th>No. of Questions</th>
                                     @if (Auth::user()->role == 0)
                                         <th>Play</th>
@@ -90,12 +89,6 @@
                                         <td>None</td>
                                     @else
                                         <td>{{$quizView -> time_limit}} </td>
-                                    @endif
-                                    <!-- If items are not allowed, display no, otherwise yes -->
-                                    @if($quizView -> items == 0)
-                                        <td>No</td>
-                                    @else
-                                        <td>Yes</td>
                                     @endif
                                     <!--Count number of questions on the quiz-->
                                     <td>{{App\Models\Question::where('quiz_id', '=', $quizView->quiz_id)->count();}}</td>
@@ -119,14 +112,14 @@
                                 </tr>
                                 @endforeach
                             @else
-                                <tr><td colspan='7'>No quizzes assigned to this group</td></tr>
+                                <tr><td colspan='6'>No quizzes assigned to this group</td></tr>
                             @endif
                         </table>
                     </div>
                     @if (Auth::user()->role == 0)
                         <a class="btn btn-primary" onclick="return confirm('Are you sure you want to leave this group?')" href="{{route('leave-group', Auth::id() )}}">Leave Group</a>
                     @else
-                        <a class="btn btn-primary" onclick="return confirm('Are you sure you want to remove this group?')" href="{{route('delete-group', $userGroup->group_id) }}">Remove Group</a>
+                        <a class="btn btn-primary" onclick="return confirm('Are you sure you want to remove this group?\nThis will remove all students in the group.')" href="{{route('delete-group', $userGroup->group_id) }}">Remove Group</a>
                     @endif
                 </div>
             </div>

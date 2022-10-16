@@ -20,11 +20,11 @@ class ReportsController extends Controller
             'history.date_taken', 'quiz.quiz_title')
             ->join('quiz', 'quiz.quiz_id','=', 'history.quiz_id')
             ->where('history.user_id','=', Auth::id())
-            ->orderBy('date_taken', 'desc')
+            ->orderBy('history_id', 'desc')
             ->limit(10)
             ->get();
-            $countMath = $this->countSubject(1, 0);
-            $countSci = $this->countSubject(2, 0);
+            $countMath = $this->countQuiz(1, 0);
+            $countSci = $this->countQuiz(2, 0);
             $countQuesMath = $this->countQues(1, 0);
             $countQuesSci = $this->countQues(2, 0);
             $sumMathScore = $this->sumScore(1, 0);
@@ -33,18 +33,26 @@ class ReportsController extends Controller
             $sciHistory = $this->getSubHistory(2, 0);
             $mathCountAttempt = $this->countAttempt(1, 0);
             $sciCountAttempt = $this->countAttempt(2, 0);
+            
+            //Group data is unused, therefore pass empty
+            $countGroup = $this->countQuiz(0, 2);
+            $countGroupQues = $this->countQues(0, 2);
+            $sumGroupScore = $this->sumScore(0, 2);
+            $groupHistory = $this->getSubHistory(0, 2);
+            $groupCountAttempt = $this->countAttempt(0, 2);
+
         } else {
             $history = DB::table('history')
-            ->select('history.user_id', 'history.quiz_id', 'history.score', 'history.time_taken', 
+            ->select('history.history_id', 'history.user_id', 'history.quiz_id', 'history.score', 'history.time_taken', 
             'history.date_taken', 'quiz.quiz_title', 'users.username')
             ->join('quiz', 'quiz.quiz_id','=', 'history.quiz_id')
             ->join('users', 'users.user_id','=', 'history.user_id')
             ->where('quiz.user_id','=', Auth::id())
-            ->orderBy('date_taken', 'desc')
+            ->orderBy('history_id', 'desc')
             ->limit(10)
-            ->get();;
-            $countMath = $this->countSubject(1, 1);
-            $countSci = $this->countSubject(2, 1);
+            ->get();
+            $countMath = $this->countQuiz(1, 1);
+            $countSci = $this->countQuiz(2, 1);
             $countQuesMath = $this->countQues(1, 1);
             $countQuesSci = $this->countQues(2, 1);
             $sumMathScore = $this->sumScore(1, 1);
@@ -53,23 +61,63 @@ class ReportsController extends Controller
             $sciHistory = $this->getSubHistory(2, 1);;
             $mathCountAttempt = $this->countAttempt(1, 1);
             $sciCountAttempt = $this->countAttempt(2, 1);
+
+            $getGroup = DB::table('users')->where('user_id','=', Auth::id())->value('group_id');
+            if (!$getGroup == NULL) {
+                //Get group data
+                $getGroupSub = DB::table('groups')
+                ->where('user_id','=', Auth::id())
+                ->value('subject_id');
+
+                $groupSubName = DB::table('subject')
+                ->where('subject_id','=', $getGroupSub)
+                ->value('subject_name');
+
+                $countGroup = $this->countQuiz($getGroupSub, 2);
+                $countGroupQues = $this->countQues($getGroupSub, 2);
+                $sumGroupScore = $this->sumScore($getGroupSub, 2);
+                $groupHistory = $this->getSubHistory($getGroupSub, 2);
+                $groupCountAttempt = $this->countAttempt($getGroupSub, 2);
+            } else {
+                //Group data is unused, therefore pass empty
+                $countGroup = NULL;
+                $countGroupQues = NULL;
+                $sumGroupScore = NULL;
+                $groupHistory = NULL;
+                $groupCountAttempt = NULL;
+            }
         }
 
         return view('reports')->with(compact('history', 'countMath', 'countSci', 'countQuesMath', 'countQuesSci', 'sumMathScore', 'sumScienceScore', 'mathHistory', 
-        'sciHistory', 'mathCountAttempt', 'sciCountAttempt'));
+        'sciHistory', 'mathCountAttempt', 'sciCountAttempt', 'countGroup', 'countGroupQues', 'sumGroupScore', 
+        'groupHistory', 'groupCountAttempt', 'groupSubName'));
     }
 
-    public function countSubject($subject_id, $role){
+    public function countQuiz($subject_id, $role){
         if ($role == 0) {
+            //Count quiz attempts made by student in a certain subject
             $countSub = DB::table('history')
             ->join('quiz', 'quiz.quiz_id', '=', 'history.quiz_id')
             ->where('history.user_id','=', Auth::id())
             ->where('quiz.subject_id','=', $subject_id)
             ->count();
-        } else {
+        } elseif ($role == 1) {
+            //Count quiz attempts made by all students in a certain subject
             $countSub = DB::table('history')
             ->join('quiz', 'quiz.quiz_id', '=', 'history.quiz_id')
             ->where('quiz.subject_id','=', $subject_id)
+            ->count();
+        } else {
+            //Get group data
+            $getGroupId = DB::table('groups')
+            ->where('user_id', '=', Auth::id())
+            ->value('group_id');
+            //Count quiz attempts made by all students of a group
+            $countSub = DB::table('history')
+            ->join('quiz', 'quiz.quiz_id', '=', 'history.quiz_id')
+            ->join('users', 'users.user_id', '=', 'history.user_id')
+            ->where('quiz.subject_id','=', $subject_id)
+            ->where('users.group_id','=', $getGroupId)
             ->count();
         }
 
@@ -78,19 +126,32 @@ class ReportsController extends Controller
 
     public function countQues($subject_id, $role) {
         if ($role == 0) {
-            //If student, count the amount of questions of quizzes of a certain subject that are attempted by themselves
+            //If student, count the total amount of questions of quizzes of a certain subject that are attempted by themselves
             $countQuestion = DB::table('question_bank')
             ->join('history', 'history.quiz_id','=','question_bank.quiz_id')
             ->join('quiz', 'quiz.quiz_id','=','question_bank.quiz_id')
             ->where('quiz.subject_id','=', $subject_id)
             ->where('history.user_id','=',Auth::id())
             ->count();
-        } else {
-            //If instructor, count the amount of questions of quizzes of a certain subject that are attempted
+        } elseif ($role == 1) {
+            //Count the total amount of questions of quizzes of a certain subject that are attempted all students
             $countQuestion = DB::table('question_bank')
             ->join('history', 'history.quiz_id','=','question_bank.quiz_id')
             ->join('quiz', 'quiz.quiz_id','=','question_bank.quiz_id')
             ->where('quiz.subject_id','=', $subject_id)
+            ->count();
+        } else {
+            //Get group data
+            $getGroupId = DB::table('groups')
+            ->where('user_id', '=', Auth::id())
+            ->value('group_id');
+            //Count the total amount of questions of quizzes of a certain subject that are attempted by group members
+            $countQuestion = DB::table('question_bank')
+            ->join('history', 'history.quiz_id','=','question_bank.quiz_id')
+            ->join('quiz', 'quiz.quiz_id','=','question_bank.quiz_id')
+            ->join('users', 'users.user_id', '=', 'history.user_id')
+            ->where('quiz.subject_id','=', $subject_id)
+            ->where('users.group_id','=', $getGroupId)
             ->count();
         }
 
@@ -99,18 +160,29 @@ class ReportsController extends Controller
 
     public function sumScore($subject_id, $role) {
         if ($role == 0) {
-            //If student, get sum of their score on a certain subject
+            //If student, get sum of their scores on a certain subject
             $sumScore = DB::table('history')
             ->join('quiz','quiz.quiz_id','=','history.quiz_id')
             ->where('history.user_id','=',Auth::id())
             ->where('quiz.subject_id','=', $subject_id)
             ->sum('score');
-        } else {
-            //If instructor, get sum of all scores on a certain subject
+        } elseif ($role == 1) {
+            //Get sum of all scores on a certain subject
             $sumScore = DB::table('history')
             ->join('quiz','quiz.quiz_id','=','history.quiz_id')
             ->where('quiz.subject_id','=', $subject_id)
             ->sum('score');            
+        } else {
+            //Get group data
+            $getGroupId = DB::table('groups')
+            ->where('user_id', '=', Auth::id())
+            ->value('group_id');
+            $sumScore = DB::table('history')
+            ->join('quiz','quiz.quiz_id','=','history.quiz_id')
+            ->join('users', 'users.user_id', '=', 'history.user_id')
+            ->where('quiz.subject_id','=', $subject_id)
+            ->where('users.group_id','=', $getGroupId)
+            ->sum('score');   
         }
 
         return $sumScore;
@@ -125,17 +197,32 @@ class ReportsController extends Controller
             ->join('quiz', 'quiz.quiz_id','=', 'history.quiz_id')
             ->where('history.user_id','=', Auth::id())
             ->where('quiz.subject_id','=', $subject_id)
-            ->orderBy('date_taken', 'desc')
+            ->orderBy('history_id', 'desc')
             ->limit(10)
             ->get();
-        } else {
-            //If instructor, get all attempts of quizzes of a specific subject
+        } elseif ($role == 1) {
+            //Get all attempts from all students of quizzes of a specific subject
             $subHistory = DB::table('history')
             ->select('history.user_id', 'history.quiz_id', 'history.score', 'history.time_taken', 
             'history.date_taken', 'quiz.quiz_title')
             ->join('quiz', 'quiz.quiz_id','=', 'history.quiz_id')
             ->where('quiz.subject_id','=', $subject_id)
-            ->orderBy('date_taken', 'desc')
+            ->orderBy('history_id', 'desc')
+            ->limit(10)
+            ->get();
+        } else {
+            $getGroupId = DB::table('groups')
+            ->where('user_id', '=', Auth::id())
+            ->value('group_id');
+            //Get all attempts from all students in a group of quizzes of a specific subject
+            $subHistory = DB::table('history')
+            ->select('history.user_id', 'history.quiz_id', 'history.score', 'history.time_taken', 
+            'history.date_taken', 'quiz.quiz_title')
+            ->join('quiz', 'quiz.quiz_id','=', 'history.quiz_id')
+            ->join('users', 'users.user_id', '=', 'history.user_id')
+            ->where('quiz.subject_id','=', $subject_id)
+            ->where('users.group_id','=', $getGroupId)
+            ->orderBy('history_id', 'desc')
             ->limit(10)
             ->get();
         }
@@ -152,18 +239,31 @@ class ReportsController extends Controller
             ->join('quiz', 'quiz.quiz_id','=', 'history.quiz_id')
             ->where('history.user_id','=', Auth::id())
             ->where('quiz.subject_id','=', $subject_id)
-            ->orderBy('date_taken', 'desc')
-            ->limit(10)
+            ->orderBy('history_id', 'asc')
             ->count();
-        } else {
-            //If instructor, count all attempts on quizzes of a specific subject
+        } elseif ($role == 1) {
+            //Count all attempts on quizzes of a specific subject for all students
             $countAttempt = DB::table('history')
             ->select('history.user_id', 'history.quiz_id', 'history.score', 'history.time_taken', 
             'history.date_taken', 'quiz.quiz_title')
             ->join('quiz', 'quiz.quiz_id','=', 'history.quiz_id')
             ->where('quiz.subject_id','=', $subject_id)
-            ->orderBy('date_taken', 'desc')
-            ->limit(10)
+            ->orderBy('history_id', 'asc')
+            ->count();
+        } else {
+            //Count all attempts on quizzes of a specific subject for all students in a group
+            //Get group data
+            $getGroupId = DB::table('groups')
+            ->where('user_id', '=', Auth::id())
+            ->value('group_id');
+            $countAttempt = DB::table('history')
+            ->select('history.user_id', 'history.quiz_id', 'history.score', 'history.time_taken', 
+            'history.date_taken', 'quiz.quiz_title')
+            ->join('quiz', 'quiz.quiz_id','=', 'history.quiz_id')
+            ->join('users', 'users.user_id', '=', 'history.user_id')
+            ->where('quiz.subject_id','=', $subject_id)
+            ->where('users.group_id','=', $getGroupId)
+            ->orderBy('history_id', 'asc')
             ->count();
         }
 
@@ -172,9 +272,10 @@ class ReportsController extends Controller
 
     public function quizChartsView($passHistoryID) {
         $quiz = DB::table('history')
-        ->select('history.history_id','history.quiz_id', 'history.score', 'quiz.quiz_title')
+        ->select('history.history_id','history.quiz_id', 'history.score', 'quiz.quiz_title', 'users.username')
+        ->join('users', 'users.user_id', '=', 'history.user_id')
         ->join('quiz', 'quiz.quiz_id', '=', 'history.quiz_id')
-        ->where('history.quiz_id','=',$passHistoryID)
+        ->where('history.history_id','=',$passHistoryID)
         ->first();
         
         $countQues = DB::table('question_bank')
