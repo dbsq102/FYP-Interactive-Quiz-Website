@@ -63,4 +63,5 @@ Route::middleware('auth')->group(function(){
     Route::get('/delete-group/{passGroupID}', [GroupsController::class, 'deleteGroup'])->name('delete-group');
     //Reports related
     Route::get('/reports-view', [ReportsController::class, 'reportsView'])->name('reports-view');
+    Route::get('/quiz-charts-view/{passHistoryID}',[ReportsController::class, 'quizChartsView'])->name('quiz-charts-view');
 });

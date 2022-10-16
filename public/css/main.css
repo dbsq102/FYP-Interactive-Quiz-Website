@@ -417,6 +417,7 @@ a:hover {
 
 .cardLink {
    text-decoration:none;
+   font-size: 1vw;
    color:black;
 }
 
@@ -458,8 +459,19 @@ a:hover {
    border-width: 10px;
 }
 
+.report-header {
+   font-size: 32px;
+   width: 100%;
+   color: white;
+   background-color: blueviolet;
+   padding: 20px;
+   font-weight: 900;
+}
+
 .chart {
    display:inline-block;
-   width:33%;
+   position:relative;
+   width:50%;
    height:400px;
+   width:600px;
 }

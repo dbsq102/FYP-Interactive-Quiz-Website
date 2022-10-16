@@ -1,36 +1,67 @@
 @include('header')
         <br>
         <div class="report-container" align="center">
-            <br>
-            <h1>Reports for {{Auth::user()->username}}</h1><br>
+            <div class="report-header">Reports</div><br>
             @if(Auth::user()->role == 0)
-            <!-- Display all quiz attempts from user -->
-            <table class="quiz-table">
-                <!-- First Row -->
-                <tr>
-                    <th>Quiz Title</th>
-                    <th>Date Taken</th>
-                    <th>Score</th>
-                    <th>Charts</th>
-                </tr>
-                @foreach ($history as $attempts)
+                <h2>Reports for {{Auth::user()->username}}</h2><br>
+                <!-- Display all quiz attempts from user -->
+                <table class="quiz-table">
+                    <!-- First Row -->
                     <tr>
-                        <td>{{$attempts->quiz_title}}</td>
-                        <td>{{$attempts->date_taken}}</td>
-                        <td>
-                            <label for="score">{{$attempts->score}} / {{App\Models\Question::where('quiz_id', '=', $attempts->quiz_id)->count();}}</label>
-                            <progress id="score" value="{{$attempts->score}}" max="{{App\Models\Question::where('quiz_id', '=', $attempts->quiz_id)->count();}}"></progress>
-                        </td>
-                        <td>
-                            <a href="Chart Page"><img src="{{asset('/images/chart.png')}}" style="width:20px"></a>
-                        </td>
+                        <th>Quiz Title</th>
+                        <th>Date Taken</th>
+                        <th>Score</th>
+                        <th>Charts</th>
                     </tr>
-                @endforeach
-            </table>
-            <br>
+                    @foreach ($history as $attempts)
+                        <tr>
+                            <td>{{$attempts->quiz_title}}</td>
+                            <td>{{$attempts->date_taken}}</td>
+                            <td>
+                                <label for="score">{{$attempts->score}} / {{App\Models\Question::where('quiz_id', '=', $attempts->quiz_id)->count();}}</label>
+                                <progress id="score" value="{{$attempts->score}}" max="{{App\Models\Question::where('quiz_id', '=', $attempts->quiz_id)->count();}}"></progress>
+                            </td>
+                            <td>
+                                <a href="Chart Page"><img src="{{asset('/images/chart.png')}}" style="width:20px"></a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </table>
+                <br>
+            @else
+                <h2>All Reports for Quizzes made by {{Auth::user()->username}}</h2></br>
+                <!-- Display all quiz attempts on quizzes made by user -->
+                <table class="quiz-table">
+                    <!-- First Row -->
+                    <tr>
+                        <th>Username</th>
+                        <th>Quiz Title</th>
+                        <th>Date Taken</th>
+                        <th>Score</th>
+                        <th>Charts</th>
+                    </tr>
+                    @foreach ($history as $attempts)
+                        <tr>
+                            <td>{{$attempts->username}}</td>
+                            <td>{{$attempts->quiz_title}}</td>
+                            <td>{{$attempts->date_taken}}</td>
+                            <td>
+                                <label for="score">{{$attempts->score}} / {{App\Models\Question::where('quiz_id', '=', $attempts->quiz_id)->count();}}</label>
+                                <progress id="score" value="{{$attempts->score}}" max="{{App\Models\Question::where('quiz_id', '=', $attempts->quiz_id)->count();}}"></progress>
+                            </td>
+                            <td>
+                                <a href="{{route('quiz-charts-view', $attempts->quiz_id) }}"><img src="{{asset('/images/chart.png')}}" style="width:20px"></a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </table>
+                <br>
             @endif
-
-            <h3>Individual / Subject Performance</h3>
+            @if(Auth::user()->role == 0)
+                <h3>Individual / Subject Performance</h3>
+            @else
+                <h3>Subject Performance for All Students</h3>
+            @endif
             <button class="btn btn-primary" id="load-maths">Maths</button>
             <button class="btn btn-primary" id="load-science">Science</button><br>
             <div class="chart" id="quiz-barchart"></div>
@@ -38,7 +69,6 @@
             <div class="chart" id="quiz-piechart"></div>
         </div> 
     </body>
-    @if (Auth::user()->role == 0)
     <script type="text/javascript">
         google.charts.load("current", {packages:["corechart"]
         });
@@ -59,7 +89,11 @@
                             2]);
 
             var options = {
-                title: "Number of Quizzes done Per Subject",
+                <?php if (Auth::user()->role == 0) {
+                    echo 'title: "Number of Quizzes Done per Subject",';
+                    }else {
+                    echo 'title: "Number of Quizzes Done per Subject for All Students",';
+                    }?>
                 width: 600,
                 height: 400,
                 bar: {groupWidth: "95%"},
@@ -70,127 +104,7 @@
         }
     </script>
 
-    <script>
-        google.charts.load('current', {
-        packages: ['corechart']
-        }).then(function () {
-        $('#load-science').on('click', loadScience);
-        $('#load-maths').on('click', loadMaths);
-        loadMaths();
-        });
-        google.charts.setOnLoadCallback(loadMaths);
-        function loadMaths() {
-            var data = google.visualization.arrayToDataTable([
-            ['Attempt', 'Score'],
-            ['<?= $history[0]->quiz_title ?>', <?= $history[0]->score ?>],
-            ['<?= $history[1]->quiz_title ?>', <?= $history[1]->score ?>],
-            ['<?= $history[2]->quiz_title ?>', <?= $history[2]->score ?>],
-            ['<?= $history[3]->quiz_title ?>', <?= $history[3]->score ?>]
-            ]);
-
-            var options = {
-            title: 'Maths Quiz Performance',
-            legend: { position: 'bottom' }
-            };
-
-            var chart = new google.visualization.LineChart(document.getElementById('quiz-linechart'));
-
-            chart.draw(data, options);
-        }
-
-        function loadScience() {
-            var data = google.visualization.arrayToDataTable([
-            ['Attempt', 'Score'],
-            ['<?= $history[0]->quiz_title ?>', <?= $history[0]->score ?>],
-            ['<?= $history[1]->quiz_title ?>', <?= $history[1]->score ?>],
-            ['<?= $history[2]->quiz_title ?>', <?= $history[2]->score ?>],
-            ['<?= $history[3]->quiz_title ?>', <?= $history[3]->score ?>]
-            ]);
-
-            var options = {
-            title: 'Science Quiz Performance',
-            legend: { position: 'bottom' }
-            };
-
-            var chart = new google.visualization.LineChart(document.getElementById('quiz-linechart'));
-
-            chart.draw(data, options);
-        }
-    </script>
-    <script>
-        google.charts.load('current', {
-        packages: ['corechart']
-        }).then(function () {
-        $('#load-science').on('click', loadScience2);
-        $('#load-maths').on('click', loadMaths2);
-        loadMaths();
-        });
-        google.charts.setOnLoadCallback(loadMaths2);
-        function loadMaths2() {
-            var data = google.visualization.arrayToDataTable([
-            ['Correct', 'Questions'],
-            ['Correct', <?= $sumMathScore ?>],
-            ['Incorrect', <?= $countQuesMath - $sumMathScore ?>]
-            ]);
-
-            var options = {
-            title: 'Maths Quizzes Accuracy'
-            };
-
-            var chart = new google.visualization.PieChart(document.getElementById('quiz-piechart'));
-
-            chart.draw(data, options);
-        }
-
-        function loadScience2() {
-            var data = google.visualization.arrayToDataTable([
-            ['Correct', 'Questions'],
-            ['Correct', <?= $sumScienceScore ?>],
-            ['Incorrect', <?= $countQuesSci - $sumScienceScore ?>]
-            ]);
-
-            var options = {
-            title: 'Science Quizzes Accuracy'
-            };
-
-            var chart = new google.visualization.PieChart(document.getElementById('quiz-piechart'));
-
-            chart.draw(data, options);
-        }
-    </script>
-    @else
     <script type="text/javascript">
-        google.charts.load("current", {packages:["corechart"]
-        });
-        google.charts.setOnLoadCallback(drawChart);
-        function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ["Subject", "No. of Quizzes", { role: "style" } ],
-                ["Science", 10, "green"],
-                ["Math", 14, "blue"]
-            ]);
-
-            var view = new google.visualization.DataView(data);
-            view.setColumns([0, 1,
-                            { calc: "stringify",
-                                sourceColumn: 1,
-                                type: "string",
-                                role: "annotation" },
-                            2]);
-
-            var options = {
-                title: "Number of Quizzes done Per Subject across all students",
-                width: 600,
-                height: 400,
-                bar: {groupWidth: "95%"},
-                legend: { position: "none" },
-            };
-            var chart = new google.visualization.BarChart(document.getElementById("quiz-barchart"));
-            chart.draw(view, options);
-        }
-    </script>
-
-    <script>
         google.charts.load('current', {
         packages: ['corechart']
         }).then(function () {
@@ -200,17 +114,29 @@
         });
         google.charts.setOnLoadCallback(loadMaths);
         function loadMaths() {
-            var data = google.visualization.arrayToDataTable([
-            ['Attempt', 'Score'],
-            ['Quiz 1', 3],
-            ['Quiz 2', 2],
-            ['Quiz 3', 3],
-            ['Quiz 4', 1]
+            var count = <?=$mathCountAttempt?>;
+            if (count > 0) {
+                var data = google.visualization.arrayToDataTable([
+                ['Attempt', 'Score'],
+                <?php for($i = 0; $i < count($mathHistory); $i++) {
+                    echo '["'.$mathHistory[$i]->quiz_title.'",'.$mathHistory[$i]->score.'],';
+                }?>
+                ]);
+            } else {
+                var data = google.visualization.arrayToDataTable([
+                ['Attempt', 'Score'],
+                ['None', 0]
             ]);
 
+            }
+
             var options = {
-            title: 'Maths Quiz Performance',
-            legend: { position: 'bottom' }
+                <?php if (Auth::user()->role == 0) {
+                    echo 'title: "Math Quiz Performance",';
+                    }else {
+                    echo 'title: "Math Quiz Performance for All Students",';
+                    }?>
+                legend: { position: 'bottom' }
             };
 
             var chart = new google.visualization.LineChart(document.getElementById('quiz-linechart'));
@@ -219,17 +145,28 @@
         }
 
         function loadScience() {
-            var data = google.visualization.arrayToDataTable([
-            ['Attempt', 'Score'],
-            [<?= $history[0]?>, 5],
-            ['Quiz 2', 4],
-            ['Quiz 3', 1],
-            ['Quiz 4', 3]
+            var count = <?=$sciCountAttempt?>;
+            if (count > 0) {
+                var data = google.visualization.arrayToDataTable([
+                    <?php for($i = 0; $i < count($sciHistory); $i++) {
+                    echo '["'.$sciHistory[$i]->quiz_title.'",'.$sciHistory[$i]->score.'],';
+                }?>
+                ]);
+            } else {
+                var data = google.visualization.arrayToDataTable([
+                ['Attempt', 'Score'],
+                ['None', 0]
             ]);
 
+            }
+
             var options = {
-            title: 'Science Quiz Performance',
-            legend: { position: 'bottom' }
+                <?php if (Auth::user()->role == 0) {
+                    echo 'title: "Science Quiz Performance",';
+                    }else {
+                    echo 'title: "Science Quiz Performance for All Students",';
+                }?>
+                legend: { position: 'bottom' }
             };
 
             var chart = new google.visualization.LineChart(document.getElementById('quiz-linechart'));
@@ -237,24 +174,36 @@
             chart.draw(data, options);
         }
     </script>
-    <script>
+    <script type="text/javascript">
         google.charts.load('current', {
         packages: ['corechart']
         }).then(function () {
         $('#load-science').on('click', loadScience2);
         $('#load-maths').on('click', loadMaths2);
-        loadMaths();
+        loadMaths2();
         });
         google.charts.setOnLoadCallback(loadMaths2);
         function loadMaths2() {
-            var data = google.visualization.arrayToDataTable([
-            ['Task', 'Questions'],
-            ['Correct', <?= $sumMathScore ?>],
-            ['Incorrect', <?= $countQuesMath - $sumMathScore?>]
-            ]);
-
+            var count = <?=$mathCountAttempt?>;
+            if (count > 0) {
+                var data = google.visualization.arrayToDataTable([
+                ['Correct', 'Questions'],
+                ['Correct', <?= $sumMathScore ?>],
+                ['Incorrect', <?= $countQuesMath - $sumMathScore ?>]
+                ]);
+            }else {
+                var data = google.visualization.arrayToDataTable([
+                ['Correct', 'Questions'],
+                ['Correct', 1],
+                ['Incorrect', 1]
+                ]);
+            }
             var options = {
-            title: 'Maths Quizzes Accuracy for All Students'
+                <?php if (Auth::user()->role == 0) {
+                    echo 'title: "Math Quizzes Accuracy",';
+                    }else {
+                    echo 'title: "Math Quizzes Accuracy for All Students",';
+                }?>
             };
 
             var chart = new google.visualization.PieChart(document.getElementById('quiz-piechart'));
@@ -263,14 +212,26 @@
         }
 
         function loadScience2() {
-            var data = google.visualization.arrayToDataTable([
-            ['Task', 'Questions'],
-            ['Correct', <?= $sumScienceScore ?>],
-            ['Incorrect', <?= $countQuesSci - $sumScienceScore ?>]
-            ]);
-
+            var count = <?=$sciCountAttempt?>;
+            if (count > 0) {
+                var data = google.visualization.arrayToDataTable([
+                ['Correct', 'Questions'],
+                ['Correct', <?= $sumScienceScore ?>],
+                ['Incorrect', <?= $countQuesSci - $sumScienceScore ?>]
+                ]);
+            }else {
+                var data = google.visualization.arrayToDataTable([
+                ['Correct', 'Questions'],
+                ['Correct', 1],
+                ['Incorrect', 1]
+                ]);
+            }
             var options = {
-            title: 'Science Quizzes Accuracy for All Students'
+                <?php if (Auth::user()->role == 0) {
+                    echo 'title: "Science Quizzes Accuracy",';
+                    }else {
+                    echo 'title: "Science Quizzes Accuracy for All Students",';
+                }?>
             };
 
             var chart = new google.visualization.PieChart(document.getElementById('quiz-piechart'));
@@ -278,5 +239,4 @@
             chart.draw(data, options);
         }
     </script>
-    @endif
 </html>
