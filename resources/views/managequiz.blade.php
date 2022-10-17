@@ -1,6 +1,7 @@
         @include('header')
         <br>
         <div align="center">
+            <h2>List of available quizzes</h2>
             <div class="display-table">
                 <!-- Check if quiz table is empty -->
                 @if(!empty($quiz))
@@ -23,6 +24,7 @@
                         @endif
                     </tr>
                     @foreach($quiz as $quizView)
+                        @if($completeCheck[$loop->iteration-1] == 1 || Auth::user()->role == 1)
                         <tr id = "{{ $quizView -> quiz_id}}Row">
                             <td>{{$quizView -> quiz_title}} </td>
                             <td>{{$quizView -> subject_name}} </td>
@@ -70,6 +72,7 @@
                                 @endif
                             @endif
                         </tr>
+                        @endif
                     @endforeach
                 </table>
                 <!-- If no quiz available -->

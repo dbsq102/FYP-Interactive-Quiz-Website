@@ -29,6 +29,8 @@ class PlayController extends Controller
         //Put sessions in case of use, reset some sessions again just in case
         Session::forget('ansPhase');
         Session::forget('score');
+        echo '<script>localStorage.removeItem("timelimit")</script>';
+        Session::put('timelimit', $quiz->time_limit);
         Session::put('playQuizId', $passQuizID);
         Session::put('playQuesNo', 1);
         return view('standby')->with(compact('quiz', 'quesCount'));
@@ -51,9 +53,13 @@ class PlayController extends Controller
         $quesCount = DB::table('question_bank')
         ->where('quiz_id', '=', $passQuizID)
         ->count();
+        //Get gamemode ID for quiz
+        $getGamemode = DB::table('quiz')
+        ->where('quiz_id','=',$passQuizID)
+        ->value('gamemode_id');
         //Put session data for later
         Session::put('playQuesID', $currQues->ques_id);
-        return view ('playquiz')->with(compact('currQues', 'quesCount', 'currQuesAns'));
+        return view ('playquiz')->with(compact('currQues', 'quesCount', 'currQuesAns', 'getGamemode'));
     }
 
     public function finishQuiz() {
@@ -88,6 +94,67 @@ class PlayController extends Controller
 
     public function checkAnswer($passCorrect) {
         if($passCorrect == 1) {
+            if(!Session::has('score')) {
+                Session::put('score', 1);
+            } else {
+                Session::put('score', Session::get('score') + 1);
+            }
+        } else {
+            if(!Session::has('score')) {
+                Session::put('score', 0);
+            }
+        }
+        //Get current question count
+        $quesCount = DB::table('question_bank')
+        ->where('quiz_id', '=', Session::get('playQuizId'))
+        ->count();
+        //Put next question in session
+        Session::put('playQuesNo', Session::get('playQuesNo') + 1);
+        Session::forget('ansPhase');
+        if ($quesCount >= Session::get('playQuesNo')) {
+            return redirect()->route('play-quiz', Session::get('playQuizId'));
+        }else {
+            return redirect()->route('finish-quiz');
+        }
+    }
+
+    public function checkMultiAnswer(Request $request) {
+        $point = 0;
+        //Get current question
+        $currQues = DB::table('question_bank')
+        ->where('ques_no', '=', Session::get('playQuesNo'))
+        ->where('quiz_id','=', Session::get('playQuizId'))
+        ->value('ques_id');
+        //Get correct values for answers of current question
+        $checkAns = DB::table('answer_bank')
+        ->where('ques_id', '=', $currQues)
+        ->where('correct','=', 1)
+        ->count();
+        
+        //If check matches, move to next, if incorrect, set 0
+        if ($request->has('answer1')) {
+            if ($request->answer1 == 1) {
+                $point++;
+            }
+        }
+        if ($request->has('answer2')) {
+            if ($request->answer2 == 1) {
+                $point++;
+            }
+            
+        }
+        if ($request->has('answer3')) {
+            if ($request->answer3 == 1) {
+                $point++;
+            }
+        }
+        if ($request->has('answer4')) {
+            if ($request->answer4 == 1) {
+                $point++;
+            }
+        }
+        //Compare points
+        if ($checkAns == $point) {
             if(!Session::has('score')) {
                 Session::put('score', 1);
             } else {

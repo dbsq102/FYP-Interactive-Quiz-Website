@@ -75,11 +75,13 @@ body {
    border-collapse: collapse;
    font: 14px Arial, Helvetica, sans-serif, bold;
    text-align: center;
+   overflow-x:auto;
 }
  
 .quiz-table td, #quiz-table th {
    border: 2px solid #ddd;
    padding: 16px;
+   overflow-x:auto;
 }
  
 .quiz-table th {
@@ -89,6 +91,7 @@ body {
    text-align: center;
    background-color:blueviolet;
    color:white;
+   overflow-x:auto;
 }
  
 .quiz-table tr:nth-child(even){
@@ -451,7 +454,7 @@ a:hover {
 
 .report-container {
    background-color: #ffffff;
-   margin-left:600px;
+   margin-left:700px;
    margin-right:100px;
    border-radius: 20px;
    border-color: blueviolet;
@@ -477,6 +480,7 @@ a:hover {
    border-style:solid;
    border-width:1px;
    border-color:black;
+   overflow-x:auto;
 }
 
 .sidebar2 {
@@ -505,5 +509,36 @@ a:hover {
    border-color: blueviolet;
    border-style:solid;
    border-width: 10px;
-   width: 65%;
+   width: 60%;
+}
+
+.labelAns {
+   background-color:rgb(198, 137, 255);
+   padding:20px;
+   border-radius: 10px;
+   width: 200px;
+   font-size: 24px;
+   border-style:solid;
+   border-color:blueviolet;
+}
+
+.answer1 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
+}
+.answer2 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
+}
+.answer3 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
+}
+.answer4 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
 }

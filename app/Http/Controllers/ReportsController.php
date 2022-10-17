@@ -35,6 +35,7 @@ class ReportsController extends Controller
             $sciCountAttempt = $this->countAttempt(2, 0);
             
             //Group data is unused, therefore pass empty
+            $groupSubName = NULL;
             $countGroup = $this->countQuiz(0, 2);
             $countGroupQues = $this->countQues(0, 2);
             $sumGroupScore = $this->sumScore(0, 2);

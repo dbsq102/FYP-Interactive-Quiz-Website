@@ -26,10 +26,36 @@ class QuizController extends Controller
             ->orderBy('quiz.quiz_id', 'asc')
             ->get();
 
+            //Check if quiz is complete. Do not allow to play if the question or answer is not filled.
+            //For loop through every entry of quiz
+            for ($i = 0; $i < count($quiz); $i++) {
+                //Check if every question of every quiz has question filled
+                $checkQuestions = DB::table('question_bank')
+                ->where('quiz_id','=',$quiz[$i]->quiz_id)
+                ->value('question');
+                //If they are filled, check if every answer for every question has answer filled
+                if($checkQuestions != NULL) {
+                    $question = DB::table('question_bank')->select('*')->where('quiz_id','=',$quiz[$i]->quiz_id)->get();
+                    for ($j = 0; $j < count($question); $j++) {
+                        $checkAnswers = DB::table('answer_bank')
+                        ->where('ques_id','=', $question[$j]->ques_id)
+                        ->value('answer');
+                        //If so, append a boolean check.
+                        if ($checkAnswers != NULL) {
+                            $completeCheck[$i] = 1;
+                        } else {
+                            $completeCheck[$i] = 0;
+                        }
+                    }
+                } else {
+                    $completeCheck[$i] = 0;
+                }
+            }
+
             Session::forget('quizID');
             Session::forget('quesNo');
             Session::forget('quesID');
-            return view("managequiz")->with(compact('quiz'));
+            return view("managequiz")->with(compact('quiz', 'completeCheck'));
         }
     }
 
@@ -353,7 +379,6 @@ class QuizController extends Controller
                     //If question exists, update
                     if($checkAnswer) {
                         $checkAnswer->ques_id = Session::get('quesID');
-                        //Values are 1-4. If it matches with the loop, set as such.
                         if ($request->correct == $i) {
                             $checkAnswer->correct = 1;
                         }

@@ -153,16 +153,16 @@
                             @if($currQuesAns->count() == 0)
                                 <input type="text" class="answer1" id="answer1" name="answer1" placeholder="Answer 1">
                                 <input type="checkbox" id="correct1" name="correct1" value="1">
-                                <label for="correct1">Correct</label>
+                                <label for="correct">Correct</label>
                                 <input type="text" class="answer2" id="answer2" name="answer2" placeholder="Answer 2">
                                 <input type="checkbox" id="correct2" name="correct2" value="1">
-                                <label for="correct2">Correct</label><br><br>
+                                <label for="correct">Correct</label><br><br>
                                 <input type="text" class="answer3" id="answer3" name="answer3" placeholder="Answer 3">
                                 <input type="checkbox" id="correct3" name="correct3" value="1">
-                                <label for="correct3">Correct</label>
+                                <label for="correct">Correct</label>
                                 <input type="text" class="answer4" id="answer4" name="answer4" placeholder="Answer 4">
                                 <input type="checkbox" id="correct4" name="correct4" value="1">
-                                <label for="correct4">Correct</label><br><br>
+                                <label for="correct">Correct</label><br><br>
                             @else
                                 <!--Display Answer 1 if exists-->
                                 @if($currQuesAns[0]->answer != NULL)
