@@ -68,7 +68,7 @@ class ReportsController extends Controller
                 $getGroupSub = DB::table('groups')
                 ->where('user_id','=', Auth::id())
                 ->value('subject_id');
-
+                
                 $groupSubName = DB::table('subject')
                 ->where('subject_id','=', $getGroupSub)
                 ->value('subject_name');
@@ -79,12 +79,13 @@ class ReportsController extends Controller
                 $groupHistory = $this->getSubHistory($getGroupSub, 2);
                 $groupCountAttempt = $this->countAttempt($getGroupSub, 2);
             } else {
+                $groupSubName = NULL;
                 //Group data is unused, therefore pass empty
-                $countGroup = NULL;
-                $countGroupQues = NULL;
-                $sumGroupScore = NULL;
-                $groupHistory = NULL;
-                $groupCountAttempt = NULL;
+                $countGroup = $this->countQuiz(0, 2);
+                $countGroupQues = $this->countQues(0, 2);
+                $sumGroupScore = $this->sumScore(0, 2);
+                $groupHistory = $this->getSubHistory(0, 2);
+                $groupCountAttempt = $this->countAttempt(0, 2);
             }
         }
 

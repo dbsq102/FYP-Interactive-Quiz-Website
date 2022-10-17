@@ -129,6 +129,17 @@
                                 {{ __('Next Question') }}
                             </button>
                         </form>
+                        @if (Session::get('quesNo') != 1)
+                        <br><br>
+                        <div class="btnDelete">
+                            <form class="delete" method="POST" action="{{route('delete-question') }}">
+                                @csrf
+                                <button type="submit" onclick="return confirm('Are you sure you want to delete this question?\nAll answers will be deleted as well.')" name="button" class="btn btn-primary" value="delete">
+                                    {{ __('Delete Question') }}
+                                </button>
+                            </form>
+                        </div>
+                        @endif
                     <!-- Display if question type is multiple answers -->
                     @elseif($currQues->type_id == 2)
                         <form method="POST "action="{{route('save-sel-multi-ans')}}">
@@ -234,6 +245,17 @@
                                 {{ __('Next Question') }}
                             </button>
                         </form>
+                        @if (Session::get('quesNo') != 1)
+                        <br><br>
+                        <div class="btnDelete">
+                            <form class="delete" method="POST" action="{{route('delete-question') }}">
+                                @csrf
+                                <button type="submit" onclick="return confirm('Are you sure you want to delete this question?\nAll answers will be deleted as well.')" name="button" class="btn btn-primary" value="delete">
+                                    {{ __('Delete Question') }}
+                                </button>
+                            </form>
+                        </div>
+                        @endif
                     <!-- Display if question type has 9 answers -->
                     @elseif($currQues->type_id == 3 || $currQues->type_id == 5)
                         <form method="POST "action="{{route('save-card')}}">
@@ -434,7 +456,7 @@
                         <div class="btnDelete">
                             <form class="delete" method="POST" action="{{route('delete-question') }}">
                                 @csrf
-                                <button type="submit" name="button" class="btn btn-primary" value="delete">
+                                <button type="submit" onclick="return confirm('Are you sure you want to delete this question?\nAll answers will be deleted as well.')" name="button" class="btn btn-primary" value="delete">
                                     {{ __('Delete Question') }}
                                 </button>
                             </form>

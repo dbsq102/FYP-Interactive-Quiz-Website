@@ -68,7 +68,9 @@
                                 <select name="group_id" id="group_id">
                                     <option value="">None</option>
                                     @foreach($groups as $group)
-                                        <option value="{{$group -> group_id}}">{{$group-> group_name}}</option>
+                                        @if($group->group_id == Auth::user()->group_id)
+                                            <option value="{{$group -> group_id}}">{{$group-> group_name}}</option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>

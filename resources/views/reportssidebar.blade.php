@@ -50,6 +50,7 @@
                                 <th>Score</th>
                                 <th>Charts</th>
                             </tr>
+                            @if (!$history->isEmpty())
                             @foreach ($history as $attempts)
                                 <tr>
                                     <td>{{$attempts->username}}</td>
@@ -64,6 +65,11 @@
                                     </td>
                                 </tr>
                             @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="5">There are no quiz attempts for quizzes created by you.</td>
+                                </tr>
+                            @endif
                         </table>
                         <br>
                     @endif

@@ -650,10 +650,11 @@ class QuizController extends Controller
     }
 
     public function deleteQuestion() {
-        $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where('quiz_id', '=', Session::get('quizID'))->first();
+        $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where('quiz_id', '=', Session::get('quizID'));
         $checkAns = Answer::where('ques_id','=', Session::get('quesID'));
+        $checkAnsExist = DB::table('answer_bank')->where('ques_id','=', Session::get('quesID'))->get();
         //Delete answers first if they exist, if not, just delete question
-        if ($checkAns) {
+        if (!$checkAnsExist->isEmpty()) {
             $res = $checkAns->delete();
             if ($res) {
                 //Delete question after
