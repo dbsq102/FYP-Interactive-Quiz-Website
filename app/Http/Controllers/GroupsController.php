@@ -41,6 +41,7 @@ class GroupsController extends Controller
         $noGroup = DB::table('users')
         ->select('user_id', 'username')
         ->where('group_id','=', NULL)
+        ->where('role','=', 0)
         ->get();
 
         //get all groups that are public

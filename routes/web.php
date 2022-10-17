@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/play-quiz/{passQuizID}', [PlayController::class, 'playView'])->name('play-quiz');
     //Check Answer
     Route::get('/check-answer/{passCorrect}', [PlayController::class, 'checkAnswer'])->name('check-answer');
+    Route::post('/check-multi-answer', [PlayController::class, 'checkMultiAnswer'])->name('check-multi-answer');
     Route::get('/finish-quiz', [PlayController::class, 'finishQuiz'])->name('finish-quiz');
     //Groups related
     Route::get('/groups-view/{passGroupID}', [GroupsController::class, 'groupsView'])->name('groups-view');
@@ -63,4 +64,5 @@ Route::middleware('auth')->group(function(){
     Route::get('/delete-group/{passGroupID}', [GroupsController::class, 'deleteGroup'])->name('delete-group');
     //Reports related
     Route::get('/reports-view', [ReportsController::class, 'reportsView'])->name('reports-view');
+    Route::get('/quiz-charts-view/{passHistoryID}',[ReportsController::class, 'quizChartsView'])->name('quiz-charts-view');
 });

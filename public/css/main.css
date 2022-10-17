@@ -75,11 +75,13 @@ body {
    border-collapse: collapse;
    font: 14px Arial, Helvetica, sans-serif, bold;
    text-align: center;
+   overflow-x:auto;
 }
  
 .quiz-table td, #quiz-table th {
    border: 2px solid #ddd;
    padding: 16px;
+   overflow-x:auto;
 }
  
 .quiz-table th {
@@ -89,6 +91,7 @@ body {
    text-align: center;
    background-color:blueviolet;
    color:white;
+   overflow-x:auto;
 }
  
 .quiz-table tr:nth-child(even){
@@ -116,7 +119,7 @@ body {
    margin-left:20px;
 }
 
-.quizeditor {
+.sidebar-container {
    border-color: blueviolet;
    border-style: solid;
    border-width: 10px;
@@ -125,7 +128,7 @@ body {
    background-color: white;
 }
 
-.quizeditor-content {
+.sidebar-content {
    padding:30px;
 }
 
@@ -417,6 +420,7 @@ a:hover {
 
 .cardLink {
    text-decoration:none;
+   font-size: 1vw;
    color:black;
 }
 
@@ -450,10 +454,91 @@ a:hover {
 
 .report-container {
    background-color: #ffffff;
-   margin-left:100px;
+   margin-left:700px;
    margin-right:100px;
    border-radius: 20px;
    border-color: blueviolet;
    border-style:solid;
    border-width: 10px;
+}
+
+.report-header {
+   font-size: 24px;
+   width: 100%;
+   color: white;
+   background-color: blueviolet;
+   padding: 20px;
+   font-weight: 900;
+}
+
+.chart {
+   display:inline-block;
+   position:relative;
+   height:410px;
+   width:700px;
+   border-spacing: 5px;
+   border-style:solid;
+   border-width:1px;
+   border-color:black;
+   overflow-x:auto;
+}
+
+.sidebar2 {
+   float:left;
+   width:35%;
+   margin-left:20px;
+}
+
+.sidebar2-content {
+   padding: 30px;
+}
+
+.sidebar2-container {
+   border-color: blueviolet;
+   border-style: solid;
+   border-width: 10px;
+   border-radius: 25px;
+   background-color: white;
+}
+
+.report2-container {
+   background-color: #ffffff;
+   margin-left:400px;
+   margin-right:400px;
+   border-radius: 20px;
+   border-color: blueviolet;
+   border-style:solid;
+   border-width: 10px;
+   width: 60%;
+}
+
+.labelAns {
+   background-color:rgb(198, 137, 255);
+   padding:20px;
+   border-radius: 10px;
+   width: 200px;
+   font-size: 24px;
+   border-style:solid;
+   border-color:blueviolet;
+}
+
+.answer1 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
+}
+.answer2 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
+}
+.answer3 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
+}
+.answer4 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
 }

@@ -4,9 +4,8 @@
             <div class="col-md-8">
                 <div class="card">
                     <!-- Shows create quiz shortcut if educator, available quizzes in group if student -->
-                    <!-- Student view -->
                     <div class="card-header">
-                        Welcome, {{Auth::user()->username }}
+                        Welcome, {{Auth::user()->username }}.
                     </div>
                     <div class="card-body">
                         @if (session('status'))
@@ -15,9 +14,59 @@
                             </div>
                         @endif
                         @if (Auth::user()->role == 0)
-                            <p>Here are some quizzes assigned to your group, [GroupName]. </p>
-                            <!-- put display quiz code here -->
-                            <p>No quizzes for your group.</p>
+                            @if(Auth::user()->group_id)
+                                <p>Here are some quizzes assigned to your group, {{$getGroup}}. </p>
+                                <!-- put display quiz code here -->
+                                @if(!empty($quiz))
+                                    <div class="recentQuiz">
+                                        <table class='quiz-table'>
+                                            <tr>
+                                                <th>Quiz Title</th>
+                                                <th>Subject</th>
+                                                <th>Quiz Summary</th>
+                                                <th>Quiz Type</th>
+                                                <th>Play</th>
+                                            </tr>
+                                            @foreach($quiz as $quizView)
+                                                @if($quizView->group_id == Auth::user()->group_id)
+                                                    <tr id = "{{ $quizView -> quiz_id}}Row">
+                                                        <td>{{$quizView -> quiz_title}} </td>
+                                                        <td>{{$quizView -> subject_name}} </td>
+                                                        <td>{{$quizView -> quiz_summary}} </td>
+                                                        <td>{{$quizView -> gamemode_name}} </td>
+                                                        @if (Auth::user()->role == 0)
+                                                            @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
+                                                                @if($completeCheck[$loop->iteration-1] == 1)
+                                                                    <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}"><img src="{{asset('/images/play.png')}}" style="width:20px"></td>
+                                                                @else
+                                                                    <td>Quiz is not complete</td>
+                                                                @endif
+                                                            @else
+                                                                <td>Private</td>
+                                                            @endif      
+                                                        @else
+                                                            @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
+                                                                @if($quizView->user_id == Auth::id())
+                                                                    <td><a class="link" href= "{{route('editquiz', $quizView->quiz_id ) }}"><img src="{{asset('/images/edit.png')}}" style="width:20px"></td>
+                                                                @else
+                                                                    <td>Only Creator can Edit</td>
+                                                                @endif
+                                                            @else
+                                                                <td>Cannot Edit</td>
+                                                            @endif
+                                                        @endif
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        </table>
+                                    </div>
+                                <!-- If no quiz available -->
+                                @else
+                                <p>No quizzes available</p>
+                                @endif
+                            @else
+                            <p>You have no group, unfortunately.</p>
+                            @endif
                         @else
                             <p>Let's make a new quiz for students! </p>
                             <form action="{{route('createquiz')}}">
@@ -29,72 +78,61 @@
                     </div>
                 </div>
                 <br>
-                <!-- Educator view -->
                 <div class="card">
                     <div class="card-header">
-                        Available Quizzes
+                        Recently Available Quizzes
                     </div>
-                    <div class="card-body">
-                        <div class="row justify-content-center">
-                            <div class="display-table">
-                                <!-- Check if quiz table is empty -->
-                                @if(!empty($quiz))
-                                <table class='quiz-table'>
-                                    <!-- First row -->
-                                    <tr>
-                                        <th>Quiz</th>
-                                        <th>Subject</th>
-                                        <th>Summary</th>
-                                        <th>Game Mode</th>
-                                        <th>Time (s)</th>
-                                        <th>Items Allowed?</th>
-                                        @if (Auth::user()->role == 0)
-                                            <th>Play</th>
-                                        @else
-                                            <th>Public?</th>
-                                            <th>Edit</th>
-                                            <th>Delete</th>
-                                        @endif
-                                    </tr>
-                                    @foreach($quiz as $quizView)
-                                        <tr id = "{{ $quizView -> quiz_id}}Row">
-                                            <td>{{$quizView -> quiz_title}} </td>
-                                            <td>{{$quizView -> subject_name}} </td>
-                                            <td>{{$quizView -> quiz_summary}} </td>
-                                            <td>{{$quizView -> gamemode_name}} </td>
-                                            <td>{{$quizView -> time_limit}} </td>
-                                            <!-- If items are not allowed, display no, otherwise yes -->
-                                            @if($quizView -> items == 0)
-                                                <td>No</td>
-                                            @else
-                                                <td>Yes</td>
-                                            @endif
-                                            <!-- Likewise, if group_id is null, display no, otherwise yes-->
-                                            @if (Auth::user()->role == 1)
-                                                @if(!$quizView -> group_id)
-                                                    <td>Open</td>
-                                                @else
-                                                    <td>Private</td>
-                                                @endif
-                                            @endif
-                                            @if (Auth::user()->role == 0)
-                                                @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
-                                                    <td><a href="">Attempt Quiz</td>
-                                                @else
-                                                    <td>Private</td>
-                                                @endif
-                                            @endif
-                                        </tr>
-                                    @endforeach
-                                </table>
-                                <!-- If no quiz available -->
+                    @if(!empty($quiz))
+                    <div class="recentQuiz">
+                        <table class='quiz-table'>
+                            <tr>
+                                <th>Quiz Title</th>
+                                <th>Subject</th>
+                                <th>Quiz Summary</th>
+                                <th>Quiz Type</th>
+                                @if(Auth::user()->role == 0)
+                                    <th>Play</th>
                                 @else
-                                <p>No quizzes available</p>
+                                    <th>Edit</th>
                                 @endif
-                            </div>
-                        </div>
+                            </tr>
+                            @foreach($quiz as $quizView)
+                            <tr id = "{{ $quizView -> quiz_id}}Row">
+                                <td>{{$quizView -> quiz_title}} </td>
+                                <td>{{$quizView -> subject_name}} </td>
+                                <td>{{$quizView -> quiz_summary}} </td>
+                                <td>{{$quizView -> gamemode_name}} </td>
+                                @if (Auth::user()->role == 0)
+                                    @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
+                                        @if($completeCheck[$loop->iteration-1] == 1)
+                                            <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}"><img src="{{asset('/images/play.png')}}" style="width:20px"></td>
+                                        @else
+                                            <td>Quiz is not complete</td>
+                                        @endif
+                                    @else
+                                        <td>Private</td>
+                                    @endif      
+                                @else
+                                    @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
+                                        @if($quizView->user_id == Auth::id())
+                                            <td><a class="link" href= "{{route('editquiz', $quizView->quiz_id ) }}"><img src="{{asset('/images/edit.png')}}" style="width:20px"></td>
+                                        @else
+                                            <td>Only Creator can Edit</td>
+                                        @endif
+                                    @else
+                                        <td>Cannot Edit</td>
+                                    @endif
+                                @endif
+                            </tr>
+                            @endforeach
+                        </table>
                     </div>
+                    <!-- If no quiz available -->
+                    @else
+                    <p>No quizzes available</p>
+                    @endif
                 </div>
+                <br>
             </div>
         </div>
     </body>
