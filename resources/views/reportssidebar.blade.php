@@ -17,7 +17,7 @@
                                     <th>Quiz Title</th>
                                     <th>Date Taken</th>
                                     <th>Score</th>
-                                    <th>Charts</th>
+                                    <th>Chart</th>
                                 </tr>
                                 @if (!$history->isEmpty())
                                 @foreach ($history as $attempts)
@@ -48,7 +48,7 @@
                                 <th>Quiz Title</th>
                                 <th>Date Taken</th>
                                 <th>Score</th>
-                                <th>Charts</th>
+                                <th>Chart</th>
                             </tr>
                             @if (!$history->isEmpty())
                             @foreach ($history as $attempts)

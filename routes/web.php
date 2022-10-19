@@ -65,4 +65,6 @@ Route::middleware('auth')->group(function(){
     //Reports related
     Route::get('/reports-view', [ReportsController::class, 'reportsView'])->name('reports-view');
     Route::get('/quiz-charts-view/{passHistoryID}',[ReportsController::class, 'quizChartsView'])->name('quiz-charts-view');
+    //Extra
+    Route::get('/save-time-limit',[PlayController::class, 'saveTimeLimit'])->name('save-time-limit');
 });

@@ -28,34 +28,32 @@
                                                 <th>Play</th>
                                             </tr>
                                             @foreach($quiz as $quizView)
-                                                @if($quizView->group_id == Auth::user()->group_id)
-                                                    <tr id = "{{ $quizView -> quiz_id}}Row">
-                                                        <td>{{$quizView -> quiz_title}} </td>
-                                                        <td>{{$quizView -> subject_name}} </td>
-                                                        <td>{{$quizView -> quiz_summary}} </td>
-                                                        <td>{{$quizView -> gamemode_name}} </td>
-                                                        @if (Auth::user()->role == 0)
-                                                            @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
-                                                                @if($completeCheck[$loop->iteration-1] == 1)
+                                                @if($completeCheck[$loop->iteration-1] == 1)
+                                                    @if($quizView->group_id == Auth::user()->group_id)
+                                                        <tr id = "{{ $quizView -> quiz_id}}Row">
+                                                            <td>{{$quizView -> quiz_title}} </td>
+                                                            <td>{{$quizView -> subject_name}} </td>
+                                                            <td>{{$quizView -> quiz_summary}} </td>
+                                                            <td>{{$quizView -> gamemode_name}} </td>
+                                                            @if (Auth::user()->role == 0)
+                                                                @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
                                                                     <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}"><img src="{{asset('/images/play.png')}}" style="width:20px"></td>
                                                                 @else
-                                                                    <td>Quiz is not complete</td>
-                                                                @endif
+                                                                    <td>Private</td>
+                                                                @endif      
                                                             @else
-                                                                <td>Private</td>
-                                                            @endif      
-                                                        @else
-                                                            @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
-                                                                @if($quizView->user_id == Auth::id())
-                                                                    <td><a class="link" href= "{{route('editquiz', $quizView->quiz_id ) }}"><img src="{{asset('/images/edit.png')}}" style="width:20px"></td>
+                                                                @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
+                                                                    @if($quizView->user_id == Auth::id())
+                                                                        <td><a class="link" href= "{{route('editquiz', $quizView->quiz_id ) }}"><img src="{{asset('/images/edit.png')}}" style="width:20px"></td>
+                                                                    @else
+                                                                        <td>Only Creator can Edit</td>
+                                                                    @endif
                                                                 @else
-                                                                    <td>Only Creator can Edit</td>
+                                                                    <td>Cannot Edit</td>
                                                                 @endif
-                                                            @else
-                                                                <td>Cannot Edit</td>
                                                             @endif
-                                                        @endif
-                                                    </tr>
+                                                        </tr>
+                                                    @endif
                                                 @endif
                                             @endforeach
                                         </table>

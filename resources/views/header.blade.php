@@ -25,7 +25,7 @@
         <div id='menu'>
             <p1></p1>
             <a class="nav" href="{{ route('home') }}">Home</a>
-            <a class="nav" href="{{ route('managequiz') }}">Manage Quizzes</a>
+            <a class="nav" href="{{ route('managequiz') }}">Quizzes</a>
             <a class="nav" href="{{ route('reports-view') }}">Reports</a>
             @if (Auth::user()->group_id != NULL)
                 <a class="nav" href="{{ route('groups-view', Auth::user()->group_id) }}">Groups</a>
