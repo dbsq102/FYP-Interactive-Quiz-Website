@@ -98,12 +98,16 @@
                                     <option value="">None</option>
                                     @foreach($groups as $group)
                                         @if($currQuiz->group_id == $group->group_id)                                        
-                                            @if($group->group_id == Auth::user()->group_id)
-                                                <option value="{{$group -> group_id}}" selected="selected">{{$group-> group_name}}</option>
+                                            @if($currQuiz->subject_id == $group->subject_id)
+                                                @if($group->group_id == Auth::user()->group_id)
+                                                    <option value="{{$group -> group_id}}" selected="selected">{{$group-> group_name}}</option>
+                                                @endif
                                             @endif
                                         @else
-                                            @if($group->group_id == Auth::user()->group_id)
-                                                <option value="{{$group -> group_id}}">{{$group-> group_name}}</option>
+                                            @if($currQuiz->subject_id == $group->subject_id)
+                                                @if($group->group_id == Auth::user()->group_id)
+                                                    <option value="{{$group -> group_id}}">{{$group-> group_name}}</option>
+                                                @endif
                                             @endif
                                         @endif
                                     @endforeach

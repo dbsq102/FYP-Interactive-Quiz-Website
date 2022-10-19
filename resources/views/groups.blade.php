@@ -5,10 +5,12 @@
             <div class ="group-header">Your Group: {{$userGroup->group_name}} </div>
                 <div class="group-content">
                     <div class="group-desc">
-                        <h3>Group Description:</br>{{$userGroup->group_desc}}</h3>
+                        <h3>Group Description:</h3>
+                        <p>{{$userGroup->group_desc}}</p>
                     </div>
                     <div class="group-subject">
-                        <h3>Group Subject: <br>{{$userGroup->subject_name}}</h3>
+                        <h3>Group Subject:</h3> 
+                        <p>{{$userGroup->subject_name}}</p>
                     </div>
                     <div class="group-members">
                         <h3>Group Members:</h3>
