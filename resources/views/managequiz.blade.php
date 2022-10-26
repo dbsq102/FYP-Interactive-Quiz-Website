@@ -13,7 +13,6 @@
                         <th>Summary</th>
                         <th>Game Mode</th>
                         <th>Time (m)</th>
-                        <th>Items Allowed?</th>
                         <th>No. of Questions</th>
                         @if (Auth::user()->role == 0)
                             <th>Play</th>
@@ -35,12 +34,6 @@
                             @else
                                 <td>{{$quizView -> time_limit}} </td>
                             @endif
-                            <!-- If items are not allowed, display no, otherwise yes -->
-                            @if($quizView -> items == 0)
-                                <td>No</td>
-                            @else
-                                <td>Yes</td>
-                            @endif
                             <!--Count number of questions on the quiz-->
                             <td>{{App\Models\Question::where('quiz_id', '=', $quizView->quiz_id)->count();}}</td>
                             <!-- Likewise, if group_id is null, display no, otherwise yes-->
@@ -52,13 +45,13 @@
                                 @endif
                             @endif
                             @if (Auth::user()->role == 0)
-                                @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
+                                @if(!$quizView -> group_id || $quizView ->group_id == (App\Models\Member::where('user_id','=',Auth::id())->where('group_id', '=', $quizView->group_id)->value('group_id')))
                                     <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}"><img src="{{asset('/images/play.png')}}" style="width:20px"></td>
                                 @else
                                     <td>Private</td>
                                 @endif
                             @else
-                                @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
+                                @if(!$quizView -> group_id || $quizView ->group_id == (App\Models\Member::where('user_id','=',Auth::id())->where('group_id', '=', $quizView->group_id)->value('group_id')))
                                     @if($quizView->user_id == Auth::id())
                                         <td><a class="link" href= "{{route('editquiz', $quizView->quiz_id ) }}"><img src="{{asset('/images/edit.png')}}" style="width:20px"></td>
                                         <td><a class="link" onclick="return confirm('Are you sure you want to delete this quiz?')"href="{{route('delete-quiz', $quizView->quiz_id) }}"><img src="{{asset('/images/delete.png')}}" style="width:20px"></td>
@@ -83,6 +76,7 @@
             
         </div><br>
         <div class="row justify-content-center">
+        <!-- Create Quiz -->
         @if (Auth::user()->role == 1)
             <form action="{{route('createquiz')}}">
                 <button type="submit" class="btn btn-primary">

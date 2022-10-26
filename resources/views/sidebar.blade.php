@@ -32,22 +32,6 @@
                                 </div>
                                 @endif
                             </div>
-
-                            <!-- Enable Items or not for Quiz-->
-                            <div class="row mb-3">
-                                <label for="update_items" class="col-md-4 col-form-label text-md-end">Special Privileges: </label>
-                                @if ($currQuiz->items == 1)
-                                <label for="update_items">Yes</input>
-                                <input id="update_items" type="radio" class="update_items" name="update_items" value="1" checked="checked"></input>
-                                <label for="update_items">No</input>
-                                <input id="update_items" type="radio" class="update_items" name="update_items" value="0"></input></br>
-                                @else ($currQuiz->items == 0)
-                                <label for="update_items">Yes</input>
-                                <input id="update_items" type="radio" class="update_items" name="update_items" value="1"></input>
-                                <label for="update_items">No</input>
-                                <input id="update_items" type="radio" class="update_items" name="update_items" value="0" checked="checked"></input></br>
-                                @endif
-                            </div>
                             
                             <!-- Select Game Mode -->
                             <div class="row mb-3">

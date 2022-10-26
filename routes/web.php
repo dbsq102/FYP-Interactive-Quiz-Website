@@ -60,9 +60,11 @@ Route::middleware('auth')->group(function(){
     Route::post('/create-group', [GroupsController::class, 'createGroup'])->name('create-group');
     Route::get('/join-group/{passGroupID}', [GroupsController::class, 'joinGroup'])->name('join-group');
     Route::post('/add-to-group/{passGroupID}', [GroupsController::class, 'addToGroup'])->name('add-to-group');
-    Route::get('/leave-group/{passUserID}', [GroupsController::class, 'leaveGroup'])->name('leave-group');
+    Route::get('/leave-group/{passGroupID}', [GroupsController::class, 'leaveGroup'])->name('leave-group');
+    Route::get('/kick-group/{passUserID}', [GroupsController::class, 'kickGroup'])->name('kick-group');
     Route::get('/delete-group/{passGroupID}', [GroupsController::class, 'deleteGroup'])->name('delete-group');
     //Reports related
-    Route::get('/reports-view', [ReportsController::class, 'reportsView'])->name('reports-view');
+    Route::get('/reports-view/{reportState}', [ReportsController::class, 'reportsView'])->name('reports-view');
     Route::get('/quiz-charts-view/{passHistoryID}',[ReportsController::class, 'quizChartsView'])->name('quiz-charts-view');
+    Route::get('/group-charts-view/{passGroupID}',[ReportsController::class, 'groupChartsView'])->name('group-charts-view');
 });

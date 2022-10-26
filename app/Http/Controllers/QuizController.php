@@ -19,7 +19,7 @@ class QuizController extends Controller
             $userID = Auth::id();
             // Get quiz table data with subject data
             $quiz = DB::table('quiz')
-            ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.items','quiz.time_limit', 'quiz.user_id', 
+            ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.time_limit', 'quiz.user_id', 
             'quiz.group_id','subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
             ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
             ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
@@ -69,14 +69,12 @@ class QuizController extends Controller
             'gamemode_id'=>'required',
             'time_limit'=>'required',
             'subject_id'=>'required',
-            'items'=>'required',
         ]);
         $quiz = new Quiz();
         $quiz->quiz_title = $request->quiz_title;
         $quiz->quiz_summary = $request->quiz_desc;
         $quiz->gamemode_id = $request->gamemode_id;
         $quiz->group_id = $request->group_id;
-        $quiz->items = $request->items;
         $quiz->subject_id = $request->subject_id;
         $quiz->time_limit = $request->time_limit;
         $quiz->user_id = $userID;
@@ -118,13 +116,13 @@ class QuizController extends Controller
         }
         //Get necessary database data for next page
         $quiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.items','quiz.time_limit', 'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary','quiz.time_limit', 'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
         ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
         ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
         ->get();
 
         $currQuiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.gamemode_id', 'quiz.items','quiz.time_limit', 
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.gamemode_id','quiz.time_limit', 
         'quiz.subject_id', 'quiz.group_id', 'question_bank.type_id')
         ->join('question_bank', 'question_bank.quiz_id', '=', 'quiz.quiz_id')
         ->where('quiz.quiz_id', '=', $quizID)
@@ -200,13 +198,13 @@ class QuizController extends Controller
     public function editQuizView($passQuizID){    
         //Get necessary database data for next page
         $quiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.items','quiz.time_limit', 'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary','quiz.time_limit', 'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
         ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
         ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
         ->get();
 
         $currQuiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.gamemode_id', 'quiz.items','quiz.time_limit', 
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.gamemode_id','quiz.time_limit', 
         'quiz.subject_id', 'quiz.group_id', 'question_bank.type_id')
         ->join('question_bank', 'question_bank.quiz_id', '=', 'quiz.quiz_id')
         ->where('quiz.quiz_id', '=', $passQuizID)
@@ -269,7 +267,6 @@ class QuizController extends Controller
             'update_gamemode_id'=>'required',
             'update_time_limit'=>'required',
             'update_subject_id'=>'required',
-            'update_items'=>'required',
         ]);
         //Find quiz via ID
         $checkQuiz = Quiz::find(Session::get('quizID'));
@@ -320,7 +317,6 @@ class QuizController extends Controller
             }
             $checkQuiz->gamemode_id = $request->update_gamemode_id;
             $checkQuiz->group_id = $request->update_group_id;
-            $checkQuiz->items = $request->update_items;
             $checkQuiz->subject_id = $request->update_subject_id;
             $checkQuiz->time_limit = $request->update_time_limit;
 
