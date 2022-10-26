@@ -81,8 +81,18 @@
                                 <select name="update_group_id" id="update_group_id">
                                     <option value="">None</option>
                                     @foreach($groups as $group)
-                                        @if($group->group_id == Auth::user()->group_id)
-                                            <option value="{{$group -> group_id}}">{{$group-> group_name}}</option>
+                                        @if($currQuiz->group_id == $group->group_id)                                        
+                                            @if($currQuiz->subject_id == $group->subject_id)
+                                                @if($group->group_id == Auth::user()->group_id)
+                                                    <option value="{{$group -> group_id}}" selected="selected">{{$group-> group_name}}</option>
+                                                @endif
+                                            @endif
+                                        @else
+                                            @if($currQuiz->subject_id == $group->subject_id)
+                                                @if($group->group_id == Auth::user()->group_id)
+                                                    <option value="{{$group -> group_id}}">{{$group-> group_name}}</option>
+                                                @endif
+                                            @endif
                                         @endif
                                     @endforeach
                                 </select>

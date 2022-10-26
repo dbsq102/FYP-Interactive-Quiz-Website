@@ -78,12 +78,13 @@ class PlayController extends Controller
         if($getGamemodeID == 2 || $getGamemodeID == 3) {
             $history->time_taken == NULL;
         } else {
-            $history->time_taken == Session::get('time');
+            $history->time_taken == NULL;
         }
         $history->date_taken = date('Y-m-d H:i:s');
 
         $res = $history->save();
-        if ($res) {
+        if ($res) {            
+            echo '<script>localStorage.removeItem("timelimit")</script>';
             Session::flash('message', 'You have finished the quiz. Your attempt has been saved!');
             return redirect()->route('home');
         } else {
@@ -132,24 +133,24 @@ class PlayController extends Controller
         ->count();
         
         //If check matches, move to next, if incorrect, set 0
-        if ($request->has('answer1')) {
-            if ($request->answer1 == 1) {
+        if ($request->has('ans1')) {
+            if ($request->ans1 == 1) {
                 $point++;
             }
         }
-        if ($request->has('answer2')) {
-            if ($request->answer2 == 1) {
+        if ($request->has('ans2')) {
+            if ($request->ans2 == 1) {
                 $point++;
             }
             
         }
-        if ($request->has('answer3')) {
-            if ($request->answer3 == 1) {
+        if ($request->has('ans3')) {
+            if ($request->ans3 == 1) {
                 $point++;
             }
         }
-        if ($request->has('answer4')) {
-            if ($request->answer4 == 1) {
+        if ($request->has('ans4')) {
+            if ($request->ans4 == 1) {
                 $point++;
             }
         }
