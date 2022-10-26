@@ -522,7 +522,22 @@ a:hover {
    border-color:blueviolet;
 }
 
-.checkmark {
+.ans1 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
+}
+.ans2 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
+}
+.ans3 {
+   height: 25px;
+   width: 25px;
+   background-color: #eee;
+}
+.ans4 {
    height: 25px;
    width: 25px;
    background-color: #eee;

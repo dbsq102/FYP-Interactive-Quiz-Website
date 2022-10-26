@@ -71,11 +71,11 @@ class HomeController extends Controller
                     if ($checkAnswers != NULL) {
                         $completeCheck[$i] = 1;
                     } else {
-                        $completeCheck[$i] = NULL;
+                        $completeCheck[$i] = 0;
                     }
                 }
             } else {
-                $completeCheck[$i] = NULL;
+                $completeCheck[$i] = 0;
             }
         }
 

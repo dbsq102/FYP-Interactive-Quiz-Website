@@ -267,31 +267,31 @@
                                 <input type="text" class="question_title" id="question_title" name="question_title" placeholder="Question Title" size="100" required><br><br>
                             @endif
                             @if($currQuesAns->count() == 0)
-                                <input type="text" class="ans1" id="answer1" name="answer1" placeholder="Card 1" required>
+                                <input type="text" class="answer1" id="answer1" name="answer1" placeholder="Card 1" required>
                                 <input type="radio" id="correct" name="correct" value="1" checked="checked">
                                 <label for="correct">Correct</label>
-                                <input type="text" class="ans2" id="answer2" name="answer2" placeholder="Card 2" required>
+                                <input type="text" class="answer2" id="answer2" name="answer2" placeholder="Card 2" required>
                                 <input type="radio" id="correct" name="correct" value="2">
                                 <label for="correct">Correct</label>
-                                <input type="text" class="ans3" id="answer3" name="answer3" placeholder="Card 3" required>
+                                <input type="text" class="answer3" id="answer3" name="answer3" placeholder="Card 3" required>
                                 <input type="radio" id="correct" name="correct" value="3">
                                 <label for="correct">Correct</label><br><br>
-                                <input type="text" class="ans4" id="answer4" name="answer4" placeholder="Card 4" required>
+                                <input type="text" class="answer4" id="answer4" name="answer4" placeholder="Card 4" required>
                                 <input type="radio" id="correct" name="correct" value="4">
                                 <label for="correct">Correct</label>
-                                <input type="text" class="ans5" id="answer5" name="answer5" placeholder="Card 5" required>
+                                <input type="text" class="answer5" id="answer5" name="answer5" placeholder="Card 5" required>
                                 <input type="radio" id="correct" name="correct" value="5">
                                 <label for="correct">Correct</label>
-                                <input type="text" class="ans6" id="answer6" name="answer6" placeholder="Card 6" required>
+                                <input type="text" class="answer6" id="answer6" name="answer6" placeholder="Card 6" required>
                                 <input type="radio" id="correct" name="correct" value="6">
                                 <label for="correct">Correct</label><br><br>
-                                <input type="text" class="ans7" id="answer7" name="answer7" placeholder="Card 7" required>
+                                <input type="text" class="answer7" id="answer7" name="answer7" placeholder="Card 7" required>
                                 <input type="radio" id="correct" name="correct" value="7">
                                 <label for="correct">Correct</label>
-                                <input type="text" class="ans8" id="answer8" name="answer8" placeholder="Card 8" required>
+                                <input type="text" class="answer8" id="answer8" name="answer8" placeholder="Card 8" required>
                                 <input type="radio" id="correct" name="correct" value="8">
                                 <label for="correct">Correct</label>
-                                <input type="text" class="ans9" id="answer9" name="answer9" placeholder="Card 9" required>
+                                <input type="text" class="answer9" id="answer9" name="answer9" placeholder="Card 9" required>
                                 <input type="radio" id="correct" name="correct" value="9">
                                 <label for="correct">Correct</label><br><br>
                             @else

@@ -9,7 +9,6 @@
                             <div id="progressBar">
                                 <div></div>
                             </div>
-                            <p id="test"></p>
                             <p id="countdown"></p>
                             <h1>Q{{Session::get('playQuesNo')}}: {{$currQues->question}}</h1><br>
                             <!-- Multiple-choice Questions / Quick-Fire Questions -->
@@ -31,13 +30,11 @@
                                 <form method="POST" action="{{route('check-multi-answer')}}">
                                     @csrf
                                     @foreach ($currQuesAns as $answer)                                
-                                        <label class="labelAns" for="ans{{$answer->ans_no}}">{{$answer->answer}}
+                                        <label class="labelAns" for="ans{{$answer->ans_no}}">{{$answer->answer}}</label>
                                         @if($answer->correct == 1)
                                         <input type="checkbox" id="ans" name="ans{{$answer->ans_no}}" class="ans{{$answer->ans_no}}" value="1">
-                                        <span class="checkmark"></span></label>
                                         @else
                                         <input type="checkbox" id="ans" name="ans{{$answer->ans_no}}" class="ans{{$answer->ans_no}}" value="0">
-                                        <span class="checkmark"></span></label>
                                         @endif
                                         @if($loop->iteration % 2 == 0)
                                         <br><br>
@@ -51,17 +48,17 @@
                                     <div class="flip-card-container">
                                         <div class="flip-card-content">
                                             <div class="flip-card-front">
-                                                <a id="answer{{$answer->ans_no}}" class="cardLink">
+                                                <a id="ans{{$answer->ans_no}}" class="cardLink">
                                                 <img src="{{asset('/images/cover-card-2.png')}}" id="image" style="width:100px" ></a>
                                             </div>
                                             @if($answer->correct == 1)
                                             <div class="flip-card-back">
-                                                <a id="answer{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
+                                                <a id="ans{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
                                                 onclick="return alert('Correct!')"><div class="cardPlay">{{$answer->answer}}</div></a>
                                             </div>
                                             @else
                                             <div class="flip-card-back">
-                                                <a id="answer{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
+                                                <a id="ans{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
                                                 onclick="return alert('Sorry, your answer is incorrect.')"><div class="cardPlay">{{$answer->answer}}</div></a>
                                             </div>
                                             @endif
@@ -77,13 +74,13 @@
                                     @foreach ($currQuesAns as $answer)
                                         @if($answer->correct == 1)
                                             <div class="ansCard2" id="answer">
-                                                <a id="answer{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
+                                                <a id="ans{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
                                                 onclick="return alert('Correct!')">
                                                 <img src="{{asset('/images/cover-card.png')}}" id="image" style="width:200px" ></a>
                                             </div>
                                         @else
                                             <div class="ansCard2" id="answer">
-                                                <a id="answer{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
+                                                <a id="ans{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
                                                 onclick="return alert('Sorry, your answer is incorrect.')">
                                                 <img src="{{asset('/images/cover-card.png')}}" id="image" style="width:200px" ></a>
                                             </div>
@@ -124,41 +121,38 @@
                 }
                 var fulltime = <?=Session::get("timelimit") * 60?>;
                 var timeleft = localStorage.getItem('timelimit');
-                var timer = setInterval(function(){
-                document.getElementById('test').innerHTML = localStorage.getItem('timelimit');
-                if(timeleft <= 0){
-                    clearInterval(timer);
-                    alert("Uh oh, you ran out of time!");
-                    localStorage.removeItem('timelimit');
-                    window.location.href="{{route('finish-quiz') }}";
-                } else {
-                    $(document).on("click", "#ans", function() {
-                        localStorage.setItem('timelimit', timeleft);
-                        /*var b = parseInt(localStorage.getItem('timelimit'));
-                        console.log(b);*/
-                    });
-                    $(document).on("click", ".nav", function() {
+                    var timer = setInterval(function(){
+                    if(timeleft <= 0){
+                        clearInterval(timer);
+                        alert("Uh oh, you ran out of time!");
                         localStorage.removeItem('timelimit');
-                    });
-                    document.getElementById("countdown").innerHTML = (timeleft/60).toFixed(1) + " minutes to answer";
-                }
-                timeleft -= 1;
-                }, 1000);
-                
-
-                //Countdown bar
-                function progress(timeleft, timetotal, $element) {
-                    var progressBarWidth = timeleft * $element.width() / timetotal;
-                    $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, 'linear');
-                    if(timeleft > 0) {
-                        setTimeout(function() {
-                            progress(timeleft - 1, timetotal, $element);
-                        }, 1000);
+                        window.location.href="{{route('check-answer', 0) }}";
+                    } else {
+                        $(document).on("click", "#ans", function() {
+                            localStorage.setItem('timelimit', timeleft);
+                        });
+                        $(document).on("click", ".nav", function() {
+                            localStorage.removeItem('timelimit');
+                        });
+                        document.getElementById("countdown").innerHTML = (timeleft/60).toFixed(1) + " minutes to answer";
                     }
-                };
-                //adjust these numbers to match time set
-                //must be in seconds
-                progress(timeleft, fulltime, $('#progressBar')); 
+                    timeleft -= 1;
+                    }, 1000);
+                    
+
+                    //Countdown bar
+                    function progress(timeleft, timetotal, $element) {
+                        var progressBarWidth = timeleft * $element.width() / timetotal;
+                        $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, 'linear');
+                        if(timeleft > 0) {
+                            setTimeout(function() {
+                                progress(timeleft - 1, timetotal, $element);
+                            }, 1000);
+                        }
+                    };
+                    //adjust these numbers to match time set
+                    //must be in seconds
+                    progress(timeleft, fulltime, $('#progressBar')); 
             </script>
         @else
             @if($currQues->type_id == 1 || $currQues->type_id == 2 || $currQues->type_id == 3)

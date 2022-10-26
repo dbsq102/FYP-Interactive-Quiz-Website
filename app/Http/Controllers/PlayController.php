@@ -75,16 +75,10 @@ class PlayController extends Controller
         $history->user_id = $userID;
         $history->quiz_id = $quizID;
         $history->score = $score;
-        if($getGamemodeID == 2 || $getGamemodeID == 3) {
-            $history->time_taken == NULL;
-        } else {
-            $history->time_taken == NULL;
-        }
         $history->date_taken = date('Y-m-d H:i:s');
 
         $res = $history->save();
-        if ($res) {            
-            echo '<script>localStorage.removeItem("timelimit")</script>';
+        if ($res) {
             Session::flash('message', 'You have finished the quiz. Your attempt has been saved!');
             return redirect()->route('home');
         } else {

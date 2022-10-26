@@ -25,7 +25,7 @@
         <div id='menu'>
             <p1></p1>
             <a class="nav" href="{{ route('home') }}">Home</a>
-            <a class="nav" href="{{ route('managequiz') }}">Manage Quizzes</a>
+            <a class="nav" href="{{ route('managequiz') }}">Quizzes</a>
             <a class="nav" href="{{ route('reports-view', 0) }}">Reports</a>
             <a class="nav" href="{{ route('groups-view', 0)}}">Groups</a>
             <!--If user is a student-->

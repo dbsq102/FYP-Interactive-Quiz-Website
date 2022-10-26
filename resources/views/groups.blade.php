@@ -4,15 +4,15 @@
             <div class ="group-header">Group: {{$userGroup->group_name}} </div>
                 <div class="group-content">
                     <div class="group-desc">
-                        <h3>Group Description:</h3>
+                        <h4>Group Description:</h4>
                         <p>{{$userGroup->group_desc}}</p>
                     </div>
                     <div class="group-subject">
-                        <h3>Group Subject:</h3> 
+                        <h4>Group Subject: </h4>
                         <p>{{$userGroup->subject_name}}</p>
                     </div>
                     <div class="group-members">
-                        <h3>Group Members:</h3>
+                        <h4>Group Members:</h4>
                         <table class='quiz-table'>
                             <tr>
                                 <th>Username</th>
@@ -48,7 +48,7 @@
                         </table>
                         @if (Auth::user()->role == 1 && $userGroup->user_id == Auth::id()) 
                         <br>
-                        <h3>Add a student to the group:</h3>
+                        <h4>Add a student to the group:</h4>
                             <form method="POST" action="{{route('add-to-group', $userGroup->group_id )}}">
                                 @csrf
                                 <div class="add-student">
@@ -67,7 +67,7 @@
                             </form>
                         @endif
                     </div><br>
-                    <h3>Recent Quizzes assigned to {{$userGroup->group_name}}</h3>
+                    <h4>Recent Quizzes assigned to {{$userGroup->group_name}}</h4>
                     <div class="recentQuiz">
                         <table class='quiz-table'>
                             <tr><th colspan='6'>Recent Quizzes Assigned to {{$userGroup->group_name}}<th></tr>
