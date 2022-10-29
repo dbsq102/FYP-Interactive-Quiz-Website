@@ -1,6 +1,7 @@
         @include('header')
 
         <br><br><br>
+        <!-- Standby page with quiz information shown before taking a quiz -->
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-8 mx-auto">

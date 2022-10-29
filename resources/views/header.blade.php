@@ -23,7 +23,7 @@
 <body>
     <div id='container'>
         <div id='menu'>
-            <p1></p1>
+            <p1 class="nav2"><img src="{{asset('/images/logo.png')}}" style="width:80px"></p1>
             <a class="nav" href="{{ route('home') }}">Home</a>
             <a class="nav" href="{{ route('managequiz') }}">Quizzes</a>
             <a class="nav" href="{{ route('reports-view', 0) }}">Reports</a>

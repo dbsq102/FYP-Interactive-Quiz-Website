@@ -13,6 +13,7 @@ use Auth;
 
 class ReportsController extends Controller
 {
+    //Reports view function
     public function reportsView($reportState) {
         if (Auth::user()->role == 0) {
             $history = DB::table('history')
@@ -66,6 +67,7 @@ class ReportsController extends Controller
         'reportState', 'groups'));
     }
 
+    //Group charts view function
     public function groupChartsView($passGroupID) {
         //Get group data
         $getGroupName = DB::table('groups')
@@ -104,7 +106,25 @@ class ReportsController extends Controller
         'groupMember','avgScore','countGroupQues','sumGroupScore', 'groupCountAttempt'));
     }
 
-    //Function to count the number of quizzes done for bar chart
+    //Quiz charts view function
+    public function quizChartsView($passHistoryID) {
+        $quiz = DB::table('history')
+        ->select('history.history_id','history.quiz_id', 'history.score', 'quiz.quiz_title', 'users.username')
+        ->join('users', 'users.user_id', '=', 'history.user_id')
+        ->join('quiz', 'quiz.quiz_id', '=', 'history.quiz_id')
+        ->where('history.history_id','=',$passHistoryID)
+        ->first();
+        
+        $countQues = DB::table('question_bank')
+        ->join('history', 'history.quiz_id','=','question_bank.quiz_id')
+        ->join('quiz', 'quiz.quiz_id','=','question_bank.quiz_id')
+        ->where('history.history_id','=', $passHistoryID)
+        ->count();
+
+        return view('quizcharts')->with(compact('quiz', 'countQues'));
+    }
+/************************************************************************************************************/
+    //Functions to get necessary data
     public function countQuiz($subject_id, $role){
         if ($role == 0) {
             //Count quiz attempts made by student in a certain subject
@@ -124,7 +144,6 @@ class ReportsController extends Controller
         return $countSub;
     }
 
-    //Function to count group members for bar chart
     public function countGroupMembers($passGroupID){
         $countMembers = DB::table('group_members')
         ->join('users', 'users.user_id','=', 'group_members.user_id')
@@ -133,7 +152,7 @@ class ReportsController extends Controller
         ->count();
         return $countMembers;
     }
-    //Function to count distinct attempts at quizzes by group members for bar chart
+
     public function countGroupAttempts($passGroupID) {
         $distinctAttempts = DB::table('history')
         ->join('group_members', 'group_members.user_id','=', 'history.user_id')
@@ -144,7 +163,7 @@ class ReportsController extends Controller
         ->count('history.user_id');
         return $distinctAttempts;
     }
-    //Function to get group member names for linechart
+
     public function getGroupMemNames($passGroupID) {
         $getNames = DB::table('users')
         ->join('group_members', 'group_members.user_id','=','users.user_id')
@@ -154,7 +173,7 @@ class ReportsController extends Controller
         ->get();
         return $getNames;
     }
-    //Function to get a group member's average scores for linechart
+
     public function getGroupMemAvgScore($passUserID){
         $sumScore = DB::table('history')
         ->join('quiz','quiz.quiz_id','=','history.quiz_id')
@@ -166,7 +185,7 @@ class ReportsController extends Controller
         $avgScore = $sumScore / $countAttempts; 
         return $avgScore;
     }
-    //Function to get all group members' correct answers in assigned quizzes
+
     public function sumGroupScore($passGroupID){
         $sumScore = DB::table('history')
         ->join('group_members', 'group_members.user_id', '=','history.user_id')
@@ -177,7 +196,7 @@ class ReportsController extends Controller
         
         return $sumScore;
     }
-    //Function to count the number of questions answered by group members
+
     public function countGroupQues($passGroupID){
         $countQuestion = DB::table('history')
         ->join('group_members', 'group_members.user_id','=','history.user_id')
@@ -189,7 +208,6 @@ class ReportsController extends Controller
         return $countQuestion;
     }
 
-    //Function to count quiz attempts done by members of group
     public function countGroupAttempt($subject_id, $passGroupID){
         $countAttempt = DB::table('history')
         ->join('group_members', 'group_members.user_id','=','history.user_id')
@@ -201,7 +219,6 @@ class ReportsController extends Controller
         return $countAttempt;
     }
 
-    //Function to count no. of questions of quizzes of a certain subject for a pie chart
     public function countQues($subject_id, $role) {
         if ($role == 0) {
             //If student, count the total amount of questions of quizzes of a certain subject that are attempted by themselves
@@ -287,21 +304,5 @@ class ReportsController extends Controller
 
         return $countAttempt;
     }
-
-    public function quizChartsView($passHistoryID) {
-        $quiz = DB::table('history')
-        ->select('history.history_id','history.quiz_id', 'history.score', 'quiz.quiz_title', 'users.username')
-        ->join('users', 'users.user_id', '=', 'history.user_id')
-        ->join('quiz', 'quiz.quiz_id', '=', 'history.quiz_id')
-        ->where('history.history_id','=',$passHistoryID)
-        ->first();
-        
-        $countQues = DB::table('question_bank')
-        ->join('history', 'history.quiz_id','=','question_bank.quiz_id')
-        ->join('quiz', 'quiz.quiz_id','=','question_bank.quiz_id')
-        ->where('history.history_id','=', $passHistoryID)
-        ->count();
-
-        return view('quizcharts')->with(compact('quiz', 'countQues'));
-    }
+/************************************************************************************************************/
 }

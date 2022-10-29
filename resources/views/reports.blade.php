@@ -1,11 +1,13 @@
 @include('reportssidebar')
         <div class="report-container" align="center">
             <div class="report-header" id="header">
+                <!-- Show Individual Subject Performance if Student, show All Students and Own Groups if Educator -->
                 @if(Auth::user()->role == 0)
-                    Individual Quiz & Subject Performance</div><br>
+                    Individual Subject Performance</div><br>
                 @else 
-                    Quiz & Subject Performance for All Students/Group Members</div><br>
+                    Subject Performance for All Students/Group Members</div><br>
                 @endif
+                <!-- Display Subjects and Groups toggle if educator, otherwise Maths and Science toggles only -->
                 @if(Auth::user()->role == 1)
                     <a class="btn btn-primary" href="{{route('reports-view', 0)}}">Subjects</a>    
                     <a class="btn btn-primary" href="{{route('reports-view', 1)}}">Group</a>
@@ -19,6 +21,7 @@
                     <div class="chart" id="quiz-linechart"></div>
                     <div class="chart" id="quiz-piechart"></div>
                 @else
+                    <!-- If Groups toggle is used, display table of groups made by educator -->
                     @if(!empty($groups))
                         <table class='quiz-table' display="hidden">
                             <tr>
@@ -36,6 +39,7 @@
                             </tr>
                             @endforeach
                         </table>
+                    <!-- If no groups found -->
                     @else
                         <p>You have no groups.</p>
                     @endif
@@ -90,9 +94,9 @@
 
             var options = {
                 <?php if (Auth::user()->role == 0) {
-                    echo 'title: "Number of Quizzes Done per Subject",';
+                    echo 'title: "Number of Quiz Attempts Done per Subject",';
                     }else {
-                    echo 'title: "Number of Quizzes Done per Subject for All Students",';
+                    echo 'title: "Number of Quiz Attempts Done per Subject for All Students",';
                     }?>
                 width: 600,
                 height: 400,
@@ -135,9 +139,9 @@
 
             var options = {
                 <?php if (Auth::user()->role == 0) {
-                    echo 'title: "Math Quiz Performance",';
+                    echo 'title: "Math Quizzes Performance Over 10 Attempts",';
                     }else {
-                    echo 'title: "Math Quiz Performance for All Students",';
+                    echo 'title: "Math Quizzes Performance for All Students Over 10 Attempts",';
                     }?>
                 legend: { position: 'bottom' }
             };
@@ -165,9 +169,9 @@
 
             var options = {
                 <?php if (Auth::user()->role == 0) {
-                    echo 'title: "Science Quiz Performance",';
+                    echo 'title: "Science Quizzes Performance Over 10 Attempts",';
                     }else {
-                    echo 'title: "Science Quiz Performance for All Students",';
+                    echo 'title: "Science Quizzes Performance for All Students Over 10 Attempts",';
                 }?>
                 legend: { position: 'bottom' }
             };

@@ -29,30 +29,11 @@ class HomeController extends Controller
         // Get user ID
         $userID = Auth::id();
         // Get quiz table data with subject data for groups
-        $quiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.user_id', 'groups.group_name',
-        'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
-        ->join('groups', 'groups.group_id','=', 'quiz.group_id')
-        ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
-        ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
-        ->orderBy('quiz.quiz_id', 'desc')
-        ->limit(5)
-        ->get();
+        $quiz = $this->getQuiz();
         // Get quiz table data with subject data for the public
-        $quiz2 = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.user_id',
-        'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
-        ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
-        ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
-        ->where('quiz.group_id','=', NULL)
-        ->orderBy('quiz.quiz_id', 'desc')
-        ->limit(5)
-        ->get();
-
+        $quiz2 = $this->getQuizPublic();
         //Get user's groups if they have any
-        $getGroup = DB::table('group_members')
-        ->where('user_id','=', Auth::id())
-        ->get();
+        $getGroup = $this->getGroup();
 
         //Check if quiz is complete for group quizzes
         for ($i = 0; $i < count($quiz); $i++) {
@@ -109,4 +90,42 @@ class HomeController extends Controller
         Session::forget('quesID');
         return view('home')->with(compact('quiz', 'quiz2', 'completeCheck', 'completeCheck2', 'getGroup'));
     }
+/************************************************************************************************************/    
+    //Functions to get necessary data
+    //Function to get quiz data
+    public function getQuiz(){
+        $getQuiz = DB::table('quiz')
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.user_id', 'groups.group_name',
+        'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
+        ->join('groups', 'groups.group_id','=', 'quiz.group_id')
+        ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
+        ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
+        ->orderBy('quiz.quiz_id', 'desc')
+        ->limit(5)
+        ->get();
+
+        return $getQuiz;
+    }
+    //Function to get public quiz data
+    public function getQuizPublic(){
+        $getQuizPublic = DB::table('quiz')
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.user_id',
+        'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
+        ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
+        ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
+        ->where('quiz.group_id','=', NULL)
+        ->orderBy('quiz.quiz_id', 'desc')
+        ->limit(5)
+        ->get();
+
+        return $getQuizPublic;
+    }
+    //Function to get group user ID
+    public function getGroup() {
+        $getGroup = DB::table('group_members')
+        ->where('user_id','=', Auth::id())
+        ->get();
+        return $getGroup;
+    }
+/************************************************************************************************************/
 }

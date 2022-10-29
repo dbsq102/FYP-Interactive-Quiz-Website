@@ -1,6 +1,7 @@
         @include('header')
         <br>
         <div class="sidebar2">
+            <!-- Sidebar for reports -->
             <div class="sidebar2-container">
                 <div class="sidebar-header">
                     @if(Auth::user()->role == 0)

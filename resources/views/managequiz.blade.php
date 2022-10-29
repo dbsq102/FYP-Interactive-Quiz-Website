@@ -14,6 +14,7 @@
                         <th>Game Mode</th>
                         <th>Time (m)</th>
                         <th>No. of Questions</th>
+                        <!-- Different displays depending on role -->
                         @if (Auth::user()->role == 0)
                             <th>Play</th>
                         @else
@@ -34,7 +35,7 @@
                             @else
                                 <td>{{$quizView -> time_limit}} </td>
                             @endif
-                            <!--Count number of questions on the quiz-->
+                            <!-- Count number of questions on the quiz -->
                             <td>{{App\Models\Question::where('quiz_id', '=', $quizView->quiz_id)->count();}}</td>
                             <!-- Likewise, if group_id is null, display no, otherwise yes-->
                             @if (Auth::user()->role == 1)
@@ -44,12 +45,14 @@
                                     <td>Private</td>
                                 @endif
                             @endif
+                            <!-- If user is student, allow to take the quiz -->
                             @if (Auth::user()->role == 0)
                                 @if(!$quizView -> group_id || $quizView ->group_id == (App\Models\Member::where('user_id','=',Auth::id())->where('group_id', '=', $quizView->group_id)->value('group_id')))
                                     <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}"><img src="{{asset('/images/play.png')}}" style="width:20px"></td>
                                 @else
                                     <td>Private</td>
                                 @endif
+                            <!-- Otherwise, grant buttons to edit or delete the quiz -->
                             @else
                                 @if(!$quizView -> group_id || $quizView ->group_id == (App\Models\Member::where('user_id','=',Auth::id())->where('group_id', '=', $quizView->group_id)->value('group_id')))
                                     @if($quizView->user_id == Auth::id())
@@ -76,7 +79,7 @@
             
         </div><br>
         <div class="row justify-content-center">
-        <!-- Create Quiz -->
+        <!-- Create Quiz Button-->
         @if (Auth::user()->role == 1)
             <form action="{{route('createquiz')}}">
                 <button type="submit" class="btn btn-primary">

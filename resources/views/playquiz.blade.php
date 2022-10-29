@@ -1,5 +1,4 @@
         @include('header')
-
         <br><br><br><br>
         <div class="container">
             <div class="row align-items-center">
@@ -25,7 +24,7 @@
                                     <br><br>
                                     @endif
                                 @endforeach
-                            <!-- Multiple Select Answers-->
+                            <!-- Select Multiple Answers-->
                             @elseif ($currQues->type_id == 2)
                                 <form method="POST" action="{{route('check-multi-answer')}}">
                                     @csrf
@@ -112,8 +111,9 @@
                 return confirm('Are you sure you want to leave this ongoing quiz? Changes will not be saved.');
             });
         </script>
+        <!-- Change timers for regular question types if the quiz type is mixed -->
         @if($getGamemode == 1)
-            <!--Script for regular quiz time limit timer-->
+            <!--Script for regular quiz time limit-->
             <script>
                 //Countdown timer
                 if(localStorage.getItem('timelimit') === null) {
@@ -156,7 +156,7 @@
             </script>
         @else
             @if($currQues->type_id == 1 || $currQues->type_id == 2 || $currQues->type_id == 3)
-                <!--Script for normal timers-->
+                <!--Script for normal timers, used in multi-choice, multiple answers and card flip-->
                 <script>            
                     //Countdown timer
                     var timeleft = 15;
@@ -191,7 +191,7 @@
                     progress(15, 15, $('#progressBar')); 
                 </script>
             @elseif($currQues->type_id == 4)
-                <!--Script for quickfire questions-->
+                <!--Script for quickfire questions time limit-->
                 <script>            
                     //Countdown timer
                     var timeleft = 5;
@@ -226,7 +226,7 @@
                     progress(5, 5, $('#progressBar')); 
                 </script>
             @elseif($currQues->type_id == 5)
-                <!--Script for card flipping questions-->
+                <!--Script for card flipping questions time limit-->
                 @if(!Session::has('ansPhase'))
                     <script> 
                     //Phase 1, give 7 seconds to memorize card
@@ -303,5 +303,13 @@
                 @endif
             @endif
         @endif
+        <!-- Script for alerts -->
+        <script>
+            var msg = "{{Session::get('alert')}}";
+            var exist = "{{Session::has('alert')}}";
+            if(exist){
+                alert(msg);
+            }
+        </script>
     </body>
 </html>

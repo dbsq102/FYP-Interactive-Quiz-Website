@@ -3,7 +3,6 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <!-- Shows create quiz shortcut if educator, available quizzes in group if student -->
                     <div class="card-header">
                         Welcome, {{Auth::user()->username }}.
                     </div>
@@ -13,10 +12,10 @@
                                 {{ session('status') }}
                             </div>
                         @endif
+                        <!-- If user is a student, display recent quizzes by group-->
                         @if (Auth::user()->role == 0)
                             @if($getGroup)
                                 <p>Here are some quizzes assigned to you by your groups. </p>
-                                <!-- put display quiz code here -->
                                 @if(!empty($quiz))
                                     <div class="recentQuiz">
                                         <table class='quiz-table'>
@@ -66,9 +65,11 @@
                                 @else
                                 <p>No quizzes available</p>
                                 @endif
+                            <!-- If user has no group -->
                             @else
                             <p>You have no group, unfortunately.</p>
                             @endif
+                        <!-- If user is an educator, show create quiz shortcut button -->
                         @else
                             <p>Let's make a new quiz for students! </p>
                             <form action="{{route('createquiz')}}">
@@ -81,6 +82,7 @@
                 </div>
                 <br>
                 <div class="card">
+                    <!-- Show most recently available quizzes -->
                     <div class="card-header">Recently Available Quizzes</div>
                     @if(!empty($quiz2))
                     <div class="recentQuiz">

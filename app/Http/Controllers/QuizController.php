@@ -18,13 +18,7 @@ class QuizController extends Controller
             // Get user ID
             $userID = Auth::id();
             // Get quiz table data with subject data
-            $quiz = DB::table('quiz')
-            ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.time_limit', 'quiz.user_id', 
-            'quiz.group_id','subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
-            ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
-            ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
-            ->orderBy('quiz.quiz_id', 'asc')
-            ->get();
+            $quiz = $this->getQuiz();
 
             //Check if quiz is complete. Do not allow to play if the question or answer is not filled.
             //For loop through every entry of quiz
@@ -115,42 +109,20 @@ class QuizController extends Controller
             $res = $firstQues->save();
         }
         //Get necessary database data for next page
-        $quiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary','quiz.time_limit', 'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
-        ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
-        ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
-        ->get();
+        $quiz = $this->getQuiz2();
 
-        $currQuiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.gamemode_id','quiz.time_limit', 
-        'quiz.subject_id', 'quiz.group_id', 'question_bank.type_id')
-        ->join('question_bank', 'question_bank.quiz_id', '=', 'quiz.quiz_id')
-        ->where('quiz.quiz_id', '=', $quizID)
-        ->first();
+        $currQuiz = $this->getCurrQuiz($quizID);
 
         $groups = DB::select('select * from groups');
         $gamemodes = DB::select('select * from game_mode');
         $subjects = DB::select('select * from subject');
-        $questype = DB::table('question_type')
-        ->select('question_type.type_id', 'question_type.type_name', 'question_type.gamemode_id')
-        ->join('game_mode', 'question_type.gamemode_id', '=','game_mode.gamemode_id')
-        ->get();
-        $quesCount = DB::table('question_bank')
-        ->where('quiz_id', '=', $quizID)
-        ->count();
+        $questype = $this->getQuesType();
+        $quesCount = $this->getQuesCount($quizID);
 
         //Find first question based on ques no and quiz ID
-        $currQues = DB::table('question_bank')
-        ->where('ques_no','=', 1)
-        ->where('quiz_id','=', $quizID)
-        ->select('type_id', 'ques_id', 'question')
-        ->first();
+        $currQues = $this->getCurrQues($quizID);
         
-        $currQuesAns = DB::table('answer_bank')
-        ->where('ques_id', '=', $currQues->ques_id)
-        ->orderBy('ans_no', 'asc')
-        ->select('answer', 'ans_no', 'correct')
-        ->get();
+        $currQuesAns = $this->getCurrQuesAns($currQues);
 
         //Put necessary sessions for future use
         Session::put('quesNo', 1);
@@ -197,68 +169,37 @@ class QuizController extends Controller
     //Used to display quiz editor via manage quiz tab
     public function editQuizView($passQuizID){    
         //Get necessary database data for next page
-        $quiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary','quiz.time_limit', 'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
-        ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
-        ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
-        ->get();
-
-        $currQuiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.gamemode_id','quiz.time_limit', 
-        'quiz.subject_id', 'quiz.group_id', 'question_bank.type_id')
-        ->join('question_bank', 'question_bank.quiz_id', '=', 'quiz.quiz_id')
-        ->where('quiz.quiz_id', '=', $passQuizID)
-        ->first();
-
+        $quiz = $this->getQuiz2();
+        $currQuiz = $this->getCurrQuiz($passQuizID);
         $groups = DB::select('select * from groups');
         $gamemodes = DB::select('select * from game_mode');
         $subjects = DB::select('select * from subject');
-        $questype = DB::table('question_type')
-        ->select('question_type.type_id', 'question_type.type_name', 'question_type.gamemode_id')
-        ->join('game_mode', 'question_type.gamemode_id', '=','game_mode.gamemode_id')
-        ->get();
-        $quesCount = DB::table('question_bank')
-        ->where('quiz_id', '=', $passQuizID)
-        ->count();
+        $questype = $this->getQuesType();
+        $quesCount = $this->getQuesCount($passQuizID);
 
         //Update necessary sessions if it doesn't already exist
         if (!Session::has('quesNo') || !Session::has('quizID') || !Session::has('quesID')) {
             //Find question ID, question type and question
-            $currQues = DB::table('question_bank')
-            ->where('ques_no','=', 1)
-            ->where('quiz_id','=', $passQuizID)
-            ->select('type_id', 'ques_id', 'question')
-            ->first();
+            $currQues = $this->getCurrQues($passQuizID);
             //Get current question's answers
-            $currQuesAns = DB::table('answer_bank')
-            ->where('ques_id', '=', $currQues->ques_id)
-            ->orderBy('ans_no', 'asc')
-            ->select('answer', 'ans_no', 'correct')
-            ->get();
+            $currQuesAns = $this->getCurrQuesAns($currQues);
 
             Session::put('quesNo', 1);
             Session::put('quizID', $passQuizID);
             Session::put('quesID', $currQues->ques_id);
         } else{
-            
             //Find question ID
-            $currQues = DB::table('question_bank')
-            ->where('ques_no','=', Session::get('quesNo'))
-            ->where('quiz_id','=', $passQuizID)
-            ->select('type_id', 'ques_id', 'question')
-            ->first();
+            $currQues = $this->getCurrQues2($passQuizID);
             Session::put('quesID', $currQues->ques_id);
             //Get current question's answers if exists
-            $currQuesAns = DB::table('answer_bank')
-            ->where('ques_id', '=', $currQues->ques_id)
-            ->orderBy('ans_no', 'asc')
-            ->select('answer', 'ans_no', 'correct')
-            ->get();
+            $currQuesAns = $this->getCurrQuesAns($currQues);
         }
 
         return view('quizeditor')->with(compact('quiz', 'currQuiz', 'currQues', 'groups', 'gamemodes', 'subjects', 'questype', 'quesCount', 'currQuesAns'));
     }
-
+/************************************************************************************************************/
+    //Functions to update quiz and question settings
+    //Function to update quiz settings
     public function updateQuiz(Request $request){
         //validate updatable information
         $request->validate([
@@ -338,6 +279,7 @@ class QuizController extends Controller
         } 
     }
 
+    //Function to update question type
     public function updateQuesType(Request $request) {
         //Check if question exists
         $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where( 'quiz_id', '=', Session::get('quizID'))->first();
@@ -360,8 +302,9 @@ class QuizController extends Controller
             }
         }
     }
-
-    //function to save multi choice question
+/************************************************************************************************************/
+    //Functions to save answers
+    //Function to save multi choice question
     public function saveMultiChoice(Request $request) {
         //Check if question exists in database
         $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where( 'quiz_id', '=', Session::get('quizID'))->first();
@@ -435,6 +378,7 @@ class QuizController extends Controller
         }
     }
 
+    //Function to save card questions
     public function saveCard(Request $request) {
         //Check if question exists in database
         $checkQuestion = Question::where('ques_no','=', Session::get('quesNo'))->where( 'quiz_id', '=', Session::get('quizID'))->first();
@@ -647,7 +591,8 @@ class QuizController extends Controller
             }   
         }
     }
-
+/************************************************************************************************************/
+    //Functions related to prev/next/add/delete questions
     public function prevQuestion() {
         //decrease session number
         Session::put('quesNo', Session::get('quesNo') - 1);
@@ -736,4 +681,78 @@ class QuizController extends Controller
             return redirect()->route('editquiz', Session::get('quizID'));
         }
     }
+/************************************************************************************************************/        
+    //Functions to get necessary data for above features
+    public function getQuiz(){
+        $quiz = DB::table('quiz')
+            ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.time_limit', 'quiz.user_id', 
+            'quiz.group_id','subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
+            ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
+            ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
+            ->orderBy('quiz.quiz_id', 'asc')
+            ->get();
+        return $quiz;
+    }
+
+    public function getQuiz2() {
+        $quiz = DB::table('quiz')
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary','quiz.time_limit', 'quiz.group_id', 'subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
+        ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
+        ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
+        ->get();
+        return $quiz;
+    }
+
+    public function getCurrQuiz($quizID) {
+        $currQuiz = DB::table('quiz')
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.gamemode_id','quiz.time_limit', 
+        'quiz.subject_id', 'quiz.group_id', 'question_bank.type_id')
+        ->join('question_bank', 'question_bank.quiz_id', '=', 'quiz.quiz_id')
+        ->where('quiz.quiz_id', '=', $quizID)
+        ->first();
+        return $currQuiz;
+    }
+
+    public function getQuesType() {
+        $questype = DB::table('question_type')
+        ->select('question_type.type_id', 'question_type.type_name', 'question_type.gamemode_id')
+        ->join('game_mode', 'question_type.gamemode_id', '=','game_mode.gamemode_id')
+        ->get();
+        return $questype;
+    }
+
+    public function getQuesCount($quizID) {
+        $quesCount = DB::table('question_bank')
+        ->where('quiz_id', '=', $quizID)
+        ->count();
+        return $quesCount;
+    }
+
+    public function getCurrQues($quizID) {
+        $currQues = DB::table('question_bank')
+        ->where('ques_no','=', 1)
+        ->where('quiz_id','=', $quizID)
+        ->select('type_id', 'ques_id', 'question')
+        ->first();
+        return $currQues;
+    }
+
+    public function getCurrQues2($passQuizID) {
+        $currQues = DB::table('question_bank')
+        ->where('ques_no','=', Session::get('quesNo'))
+        ->where('quiz_id','=', $passQuizID)
+        ->select('type_id', 'ques_id', 'question')
+        ->first();
+        return $currQues;
+    }
+
+    public function getCurrQuesAns($currQues) {
+        $currQuesAns = DB::table('answer_bank')
+        ->where('ques_id', '=', $currQues->ques_id)
+        ->orderBy('ans_no', 'asc')
+        ->select('answer', 'ans_no', 'correct')
+        ->get();
+        return $currQuesAns;
+    }
+/************************************************************************************************************/
 }

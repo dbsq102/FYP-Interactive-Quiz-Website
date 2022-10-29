@@ -1,14 +1,16 @@
 @include('header')
         <br>
         <div class="report2-container" align="center">
+            <!-- Charts with Group Statistics -->
             <div class="report-header">Group Charts: {{$getGroupName}}</div><br>
             <div class="chart" id="quiz-barchart"></div><br>
             <div class="chart" id="quiz-linechart"></div><br>
             <div class="chart" id="quiz-piechart"></div><br>
+            <!-- Button to return to prior page -->
             <a class="btn btn-primary" href="{{route('reports-view', 0)}}">Go Back</a><br><br>
         </div>
     </body>
-    <!--Script for group barchart-->
+    <!-- Script for group barchart -->
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(loadGroup);
@@ -39,7 +41,7 @@
             chart.draw(view, options);
         }
     </script>
-    <!--Script for group linechart-->
+    <!-- Script for group linechart -->
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(loadGroup1);
@@ -71,7 +73,7 @@
             chart.draw(data, options);
         }
     </script>
-    <!--Script for group pie chart-->
+    <!-- Script for group pie chart -->
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(loadGroup2);

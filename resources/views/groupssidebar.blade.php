@@ -1,7 +1,9 @@
 @include('header')
         <br>
         <div class="sidebar2">
+            <!-- Sidebar for joining/viewing groups -->
             <div class="sidebar2-container">
+                <!-- Displays group list, educators may view any group but cannot join any -->
                 <div class="sidebar-header">Group List</div>
                     <div class="sidebar2-content">
                     @if(Auth::user()->role == 0)
@@ -27,8 +29,9 @@
                             <td>{{$publicGroups->subject_name}}</td>
                             @if(Auth::user()->role == 0)
                                 @if(App\Models\Member::where('user_id','=',Auth::id() )->where('group_id','=',$publicGroups->group_id)->count() == 0 )
+                                    <!-- If group is public, allow student to join group -->
                                     @if($publicGroups->public == 1)
-                                        <td><a href="{{route('join-group', $publicGroups->group_id )}}"><img src="{{asset('/images/join.png')}}" style="width:20px"></a></td>
+                                        <td><a onclick="return confirm('Are you sure you want to join this group?')"href="{{route('join-group', $publicGroups->group_id )}}"><img src="{{asset('/images/join.png')}}" style="width:20px"></a></td>
                                     @else
                                         <td>Private Group</td>
                                     @endif

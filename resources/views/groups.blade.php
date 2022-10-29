@@ -1,5 +1,6 @@
 @include('groupssidebar')
         <div class="group-container" align="center">
+            <!-- Group information -->
             @if(!empty($userGroup))
             <div class ="group-header">Group: {{$userGroup->group_name}} </div>
                 <div class="group-content">
@@ -11,6 +12,7 @@
                         <h4>Group Subject: </h4>
                         <p>{{$userGroup->subject_name}}</p>
                     </div>
+                    <!-- Group members, educator can remove members if they are the original creator -->
                     <div class="group-members">
                         <h4>Group Members:</h4>
                         <table class='quiz-table'>
@@ -46,6 +48,7 @@
                                 </tr>
                             @endforeach
                         </table>
+                        <!-- If the user is an educator and the original creator, they can manually add students to the group -->
                         @if (Auth::user()->role == 1 && $userGroup->user_id == Auth::id()) 
                         <br>
                         <h4>Add a student to the group:</h4>
@@ -67,6 +70,7 @@
                             </form>
                         @endif
                     </div><br>
+                    <!-- Display recently assigned quizzes -->
                     <h4>Recent Quizzes assigned to {{$userGroup->group_name}}</h4>
                     <div class="recentQuiz">
                         <table class='quiz-table'>
@@ -97,8 +101,9 @@
                                     @else
                                         <td>{{$quizView -> time_limit}} </td>
                                     @endif
-                                    <!--Count number of questions on the quiz-->
+                                    <!-- Count number of questions on the quiz -->
                                     <td>{{App\Models\Question::where('quiz_id', '=', $quizView->quiz_id)->count();}}</td>
+                                    <!-- If student, allow to take quiz. If educator, allow to edit quiz -->
                                     @if (Auth::user()->role == 0)
                                         <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}"><img src="{{asset('/images/play.png')}}" style="width:20px"></td>
                                     @else
@@ -119,6 +124,7 @@
                             @endif
                         </table>
                     </div>
+                    <!-- If student, allow to leave the group. If educator, allow to remove the group -->
                     @if (Auth::user()->role == 0)
                         <a class="btn btn-primary" onclick="return confirm('Are you sure you want to leave this group?')" href="{{route('leave-group', $userGroup->group_id )}}">Leave Group</a>
                     @else
@@ -126,6 +132,7 @@
                     @endif
                 </div>
             </div>
+            <!-- Default display upon pressing the groups tab -->
             @else
                 <div class ="group-header">Group: None</div>
                 <div class="group-content">

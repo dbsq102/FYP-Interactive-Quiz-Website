@@ -3,6 +3,7 @@
             <div class ="queseditor-header">{{$currQuiz->quiz_title}}</div>
                 <div class="queseditor-content">
                     <h2>Question {{Session::get('quesNo')}} out of {{$quesCount}}</h2>
+                    <!-- Allows to update the question type -->
                     <form method="POST" action="{{ route('update-ques-type') }}">
                         @csrf
                         <label for="question_type" class="col-md-4 col-form-label text-md-end">Question Type:</label></br>
@@ -17,6 +18,7 @@
                                 @endif
                             @endforeach
                         </select><br><br>
+                        <!-- Submit Button -->
                         <div align="center">
                             <button onclick="return confirm('Changes to question type will reset all answers for that question.\nProceed?')" type="submit" class="btn btn-primary">
                                 {{ __('Save') }}
@@ -24,11 +26,11 @@
                             <br><br>
                         </div>
                     </form>
-                    <!--Display if question type is multi-choice-->
+                    <!-- Display if question type is multi-choice -->
                     @if($currQues->type_id == 1 || $currQues->type_id == 4)
                         <form method="POST "action="{{route('save-multi-choice')}}">
                             @csrf
-                            <!--Display if question title exists-->
+                            <!-- Display if question title exists -->
                             @if($currQues->question != NULL)
                                 <input type="text" class="question_title" id="question_title" name="question_title" value="{{$currQues->question}}" size="100" required><br><br>
                             @else
@@ -48,7 +50,7 @@
                                 <input type="radio" id="correct" name="correct" value="4">
                                 <label for="correct">Correct</label><br><br>
                             @else
-                                <!--Display Answer 1 if exists-->
+                                <!-- Display Answer 1 if exists -->
                                 @if($currQuesAns[0]->answer != NULL)
                                     <input type="text" class="answer1" id="answer1" name="answer1" value="{{$currQuesAns[0]->answer}}" required>
                                     @if($currQuesAns[0]->correct == 1)
@@ -63,7 +65,7 @@
                                     <input type="radio" id="correct" name="correct" value="1" checked="checked">
                                     <label for="correct">Correct</label>
                                 @endif
-                                <!--Display Answer 2 if exists-->
+                                <!-- Display Answer 2 if exists -->
                                 @if($currQuesAns[1]->answer != NULL)
                                 <input type="text" class="answer2" id="answer2" name="answer2" value="{{$currQuesAns[1]->answer}}" required>
                                     @if($currQuesAns[1]->correct == 1)
@@ -78,7 +80,7 @@
                                     <input type="radio" id="correct" name="correct" value="2">
                                     <label for="correct">Correct</label><br><br>
                                 @endif
-                                <!--Display Answer 3 if exists-->
+                                <!-- Display Answer 3 if exists -->
                                 @if($currQuesAns[2]->answer != NULL)
                                 <input type="text" class="answer3" id="answer3" name="answer3" value="{{$currQuesAns[2]->answer}}" required>
                                     @if($currQuesAns[2]->correct == 1)
@@ -93,7 +95,7 @@
                                     <input type="radio" id="correct" name="correct" value="3">
                                     <label for="correct">Correct</label>
                                 @endif
-                                <!--Display Answer 4 if exists-->
+                                <!-- Display Answer 4 if exists -->
                                 @if($currQuesAns[3]->answer != NULL)
                                 <input type="text" class="answer4" id="answer4" name="answer4" value="{{$currQuesAns[3]->answer}}" required>
                                     @if($currQuesAns[3]->correct == 1)
@@ -109,37 +111,13 @@
                                     <label for="correct">Correct</label><br><br>
                                 @endif
                             @endif
+                            <!-- Submit Button -->
                             <div align="center">
                                 <button type="submit" name="button" class="btn btn-primary" value="save">
                                     {{ __('Save Question') }}
                                 </button>
                             </div>
                         </form><br>
-                        @if (Session::get('quesNo') != 1)
-                        <form class="previous"method="POST" action="{{route('prev-question')}}">
-                            @csrf
-                            <button type="submit" name="button" class="btn btn-primary" value="previous">
-                                {{ __('Previous Question') }}
-                            </button>
-                        </form>
-                        @endif
-                        <form class="next" method="POST" action="{{route('next-question')}}">
-                            @csrf
-                            <button type="submit" name="button" class="btn btn-primary" value="next">
-                                {{ __('Next Question') }}
-                            </button>
-                        </form>
-                        @if (Session::get('quesNo') != 1)
-                        <br><br>
-                        <div class="btnDelete">
-                            <form class="delete" method="POST" action="{{route('delete-question') }}">
-                                @csrf
-                                <button type="submit" onclick="return confirm('Are you sure you want to delete this question?\nAll answers will be deleted as well.')" name="button" class="btn btn-primary" value="delete">
-                                    {{ __('Delete Question') }}
-                                </button>
-                            </form>
-                        </div>
-                        @endif
                     <!-- Display if question type is multiple answers -->
                     @elseif($currQues->type_id == 2)
                         <form method="POST "action="{{route('save-sel-multi-ans')}}">
@@ -225,37 +203,13 @@
                                     <label for="correct">Correct</label><br><br>
                                 @endif
                             @endif
+                            <!-- Submit Button -->
                             <div align="center">
                                 <button type="submit" name="button" class="btn btn-primary" value="save">
                                     {{ __('Save Question') }}
                                 </button>
                             </div>
                         </form>
-                        @if (Session::get('quesNo') != 1)
-                        <form class="previous"method="POST" action="{{route('prev-question')}}">
-                            @csrf
-                            <button type="submit" name="button" class="btn btn-primary" value="previous">
-                                {{ __('Previous Question') }}
-                            </button>
-                        </form>
-                        @endif
-                        <form class="next" method="POST" action="{{route('next-question')}}">
-                            @csrf
-                            <button type="submit" name="button" class="btn btn-primary" value="next">
-                                {{ __('Next Question') }}
-                            </button>
-                        </form>
-                        @if (Session::get('quesNo') != 1)
-                        <br><br>
-                        <div class="btnDelete">
-                            <form class="delete" method="POST" action="{{route('delete-question') }}">
-                                @csrf
-                                <button type="submit" onclick="return confirm('Are you sure you want to delete this question?\nAll answers will be deleted as well.')" name="button" class="btn btn-primary" value="delete">
-                                    {{ __('Delete Question') }}
-                                </button>
-                            </form>
-                        </div>
-                        @endif
                     <!-- Display if question type has 9 answers -->
                     @elseif($currQues->type_id == 3 || $currQues->type_id == 5)
                         <form method="POST "action="{{route('save-card')}}">
@@ -437,37 +391,40 @@
                                 </button>
                             </div>
                         </form>
-                        @if (Session::get('quesNo') != 1)
-                        <form class="previous" method="POST" action="{{route('prev-question')}}">
+                    @endif
+                    <!-- Previous Question Button, won't appear if first question -->
+                    @if (Session::get('quesNo') != 1)
+                        <form class="previous"method="POST" action="{{route('prev-question')}}">
                             @csrf
                             <button type="submit" name="button" class="btn btn-primary" value="previous">
                                 {{ __('Previous Question') }}
                             </button>
                         </form>
-                        @endif
-                        <form class="next" method="POST" action="{{route('next-question')}}">
+                    @endif
+                    <!-- Next Question Button -->
+                    <form class="next" method="POST" action="{{route('next-question')}}">
+                        @csrf
+                        <button type="submit" name="button" class="btn btn-primary" value="next">
+                            {{ __('Next Question') }}
+                        </button>
+                    </form>
+                    @if (Session::get('quesNo') != 1)
+                    <br><br>
+                    <!-- Delete Question Button, won't appear if first question -->
+                    <div class="btnDelete">
+                        <form class="delete" method="POST" action="{{route('delete-question') }}">
                             @csrf
-                            <button type="submit" name="button" class="btn btn-primary" value="next">
-                                {{ __('Next Question') }}
+                            <button type="submit" onclick="return confirm('Are you sure you want to delete this question?\nAll answers will be deleted as well.')" name="button" class="btn btn-primary" value="delete">
+                                {{ __('Delete Question') }}
                             </button>
                         </form>
-                        @if (Session::get('quesNo') != 1)
-                        <br><br>
-                        <div class="btnDelete">
-                            <form class="delete" method="POST" action="{{route('delete-question') }}">
-                                @csrf
-                                <button type="submit" onclick="return confirm('Are you sure you want to delete this question?\nAll answers will be deleted as well.')" name="button" class="btn btn-primary" value="delete">
-                                    {{ __('Delete Question') }}
-                                </button>
-                            </form>
-                        </div>
-                        @endif
+                    </div>
                     @endif
                 </div>
             </div>
         </div>
         
-        <!--JavaScripts-->
+        <!-- JavaScripts -->
         <script>
             function quesTypeSelect() {
                 let userSelection = document.getElementById("question-type");
@@ -477,7 +434,7 @@
                 })
             }
         </script>
-        <!--Script that changes the time limit form to read only if gamemode does not use time limits-->
+        <!-- Script that changes the time limit form to read only if gamemode does not use time limits -->
         <script>
         document.getElementById('update_gamemode_id').onchange = function() {
             if (this.value == 2 || this.value == 3) {

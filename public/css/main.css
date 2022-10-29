@@ -26,6 +26,16 @@ body {
 	font-size: 15px;
 }
 
+.nav2 {
+   background-color:blueviolet;
+	float: left;
+   height: 30px;
+	width: 100px;
+	display: block;
+	text-align: center;
+	font-size: 15px;
+}
+
 .nav:hover {
    background-color: rgb(198, 137, 255);
    color: rgb(4, 0, 255);

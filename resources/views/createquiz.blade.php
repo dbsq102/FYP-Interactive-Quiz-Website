@@ -67,6 +67,7 @@
                                 </select>
                             </div>
 
+                            <!-- Submit Button -->
                             <div class="row mb-0">
                                 <div class="col-md-8 offset-md-4">
                                     <button type="submit" class="btn btn-primary">
@@ -79,6 +80,7 @@
                 </div>
             </div>
         </div>
+    <!--Script to disable time limit if game mode is set to Interactive or Mixed -->
     <script>
 	document.getElementById('gamemode_id').onchange = function() {
     	if (this.value == 2 || this.value == 3) {
