@@ -95,7 +95,9 @@ class ReportsController extends Controller
                 $avgScore[$i] = $this->getGroupMemAvgScore($groupMember[$i]->user_id);    
             }
         } else {
-            $avgScore = NULL;
+            for($i = 0; $i < $cntGroupMem; $i++) {
+                $avgScore[$i] = 0;  
+            }
         }
 
         //Pie chart data

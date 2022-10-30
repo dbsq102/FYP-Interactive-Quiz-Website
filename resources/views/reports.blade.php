@@ -210,9 +210,9 @@
             }
             var options = {
                 <?php if (Auth::user()->role == 0) {
-                    echo 'title: "Math Quizzes Accuracy",';
+                    echo 'title: "Math Quizzes Question Accuracy",';
                     }else {
-                    echo 'title: "Math Quizzes Accuracy for All Students",';
+                    echo 'title: "Math Quizzes Question Accuracy for All Students",';
                 }?>
             };
 
@@ -238,9 +238,9 @@
             }
             var options = {
                 <?php if (Auth::user()->role == 0) {
-                    echo 'title: "Science Quizzes Accuracy",';
+                    echo 'title: "Science Quizzes Question Accuracy",';
                     }else {
-                    echo 'title: "Science Quizzes Accuracy for All Students",';
+                    echo 'title: "Science Quizzes Question Accuracy for All Students",';
                 }?>
             };
 
