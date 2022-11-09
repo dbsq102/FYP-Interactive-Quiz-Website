@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Quiz;
 use App\Models\Groups;
+use App\Models\Member;
 use Illuminate\Http\Request;
 use Session;
 use DB;
@@ -27,9 +28,8 @@ class GroupsController extends Controller
         //Get user's group
         if ($passGroupID != 0) {
             $userGroup = DB::table('groups')
-            ->select('groups.group_id', 'groups.group_name', 'groups.group_desc', 'groups.public', 'groups.subject_id', 'subject.subject_name')
+            ->select('groups.group_id', 'groups.group_name', 'groups.group_desc', 'groups.public', 'groups.subject_id', 'groups.user_id', 'subject.subject_name')
             ->join('subject', 'subject.subject_id', '=', 'groups.subject_id')
-            ->join('users', 'groups.group_id', '=', 'users.group_id')
             ->where('groups.group_id','=',$passGroupID)
             ->first();
         }
@@ -37,29 +37,29 @@ class GroupsController extends Controller
             $userGroup = NULL;
         }
 
-        //Get all students that don't have a group
-        $noGroup = DB::table('users')
-        ->select('user_id', 'username')
-        ->where('group_id','=', NULL)
-        ->where('role','=', 0)
-        ->get();
-
-        //get all groups that are public
+        //get all groups
         $allGroups = DB::table('groups')
-        ->select('groups.group_id', 'groups.group_name', 'groups.group_desc', 'subject.subject_name')
+        ->select('groups.group_id', 'groups.group_name', 'groups.group_desc', 'groups.public', 'subject.subject_name')
         ->join('subject', 'subject.subject_id', '=', 'groups.subject_id')
-        ->where('public','=', 1)->get();
+        ->get();
 
         //Get all members of the group
         $users = DB::table('users')
-        ->select('user_id', 'username', 'email', 'role')
-        ->where('group_id','=',$passGroupID)
-        ->orderBy('role', 'desc')
+        ->select('users.user_id', 'users.username', 'users.email', 'users.role')
+        ->join('group_members', 'group_members.user_id','=','users.user_id')
+        ->where('group_members.group_id','=',$passGroupID)
+        ->orderBy('users.role', 'desc')
+        ->get();
+
+        //Get all students that are not in the group
+        $students = DB::table('users')
+        ->select('user_id', 'username')
+        ->where('role','=',0)
         ->get();
 
         //Get all quizzes related to group
         $quiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.items','quiz.time_limit', 'quiz.user_id', 
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.time_limit', 'quiz.user_id', 
         'quiz.group_id','subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
         ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
         ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
@@ -67,7 +67,7 @@ class GroupsController extends Controller
         ->orderBy('quiz.quiz_id', 'asc')
         ->get();
         
-        return view("groups")->with(compact('userGroup', 'allGroups', 'quiz', 'users', 'noGroup'));
+        return view("groups")->with(compact('userGroup', 'allGroups', 'quiz', 'users', 'students'));
     }
 
     //Get subject data for add group page
@@ -92,9 +92,11 @@ class GroupsController extends Controller
 
         $res = $group->save();
         if($res){
-            $getGroupId = Groups::where('user_id', '=', Auth::id())->value('group_id');
-            Auth::user()->group_id = $getGroupId;
-            Auth::user()->save();
+            $getGroupId = Groups::orderBy('group_id', 'desc')->where('user_id','=',Auth::id())->value('group_id');
+            $member = new Member();
+            $member->user_id = Auth::id();
+            $member->group_id = $getGroupId;
+            $member->save();
 
             Session::flash('message','Added a new group!');
             return redirect()->route('groups-view', $getGroupId);
@@ -107,12 +109,13 @@ class GroupsController extends Controller
 
     //Function to join a group
     public function joinGroup($passGroupID) {
-        $res = DB::table('users')
-        ->where('user_id','=', Auth::id())
-        ->update(['group_id'=> $passGroupID]);
+        $member = new Member();
+        $member->user_id = Auth::id();
+        $member->group_id = $passGroupID;
+        $res = $member->save();
 
         if ($res){
-            Session::flash('message','Joined a group!');
+            Session::flash('message','Joined a new group!');
             return redirect()->route('groups-view', $passGroupID);
         } else {
             Session::flash('message','Failed to join a group.');
@@ -121,9 +124,11 @@ class GroupsController extends Controller
     }
 
     public function addToGroup(Request $request, $passGroupID) {
-        $res = DB::table('users')
-        ->where('user_id','=', $request->user_id)
-        ->update(['group_id'=> $passGroupID]);
+        $member = new Member();
+        $member->user_id = $request->user_id;
+        $member->group_id = $passGroupID;
+        $res = $member->save();
+
         if ($res) {
             Session::flash('message','Added student to group!');
             return redirect()->route('groups-view', $passGroupID);
@@ -133,26 +138,38 @@ class GroupsController extends Controller
         }
     }
 
-    //Function to leave a group, instructors can also use to kick student out of group
-    public function leaveGroup($passUserID) {
-        //Used in case res fails
-        $getGroupId = Groups::where('user_id', '=', Auth::id())->value('group_id');
-        
-        $res = DB::table('users')
-        ->where('user_id','=', $passUserID)
-        ->update(['group_id' => NULL]);
+    //Function to leave a group
+    public function leaveGroup($passGroupID) {
+        $res = DB::table('group_members')
+        ->where('user_id','=', Auth::id())
+        ->where('group_id','=', $passGroupID)
+        ->delete();
 
         if ($res){
-            if (Auth::user()->role == 0) {
-                Session::flash('message','Left your group!');
-                return redirect()->route('groups-view', 0);
-            } else {
-                Session::flash('message','Removed student from group.');
-                return redirect()->route('groups-view', $getGroupId);
-            }
+            Session::flash('message','Left your group!');
+            return redirect()->route('groups-view', 0);
         } else {
             Session::flash('message','Failed to leave a group.');
-            return redirect()->route('groups-view', $getGroupId);
+            return redirect()->route('groups-view', $passGroupID);
+        }
+    }
+
+    //Function to kick out of a group
+    public function kickGroup($passUserID) {
+        //Used in case res fails
+        $getGroupID = Groups::where('user_id', '=', Auth::id())->value('group_id');
+        
+        $res = DB::table('group_members')
+        ->where('user_id','=', $passUserID)
+        ->where('group_id','=', $getGroupID)
+        ->delete();
+
+        if ($res){
+            Session::flash('message','Removed student from group.');
+            return redirect()->route('groups-view', $getGroupID);
+        } else {
+            Session::flash('message','Failed to remove from group.');
+            return redirect()->route('groups-view', $getGroupID);
         }
     }
 
@@ -163,10 +180,10 @@ class GroupsController extends Controller
         ->where('group_id', '=', $passGroupID)
         ->count();
 
-        //Set all of the user group ID to null
-        $updateUserGroup = DB::table('users')
+        //Delete group members data
+        $deleteMembers = DB::table('group_members')
         ->where('group_id','=', $passGroupID)
-        ->update(['group_id' => NULL]);
+        ->delete();
 
         //Set all quiz that share that group ID to null
         $updateQuizGroup = DB::table('quiz')

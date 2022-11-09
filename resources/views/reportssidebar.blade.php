@@ -1,6 +1,7 @@
         @include('header')
         <br>
         <div class="sidebar2">
+            <!-- Sidebar for reports -->
             <div class="sidebar2-container">
                 <div class="sidebar-header">
                     @if(Auth::user()->role == 0)
@@ -17,7 +18,7 @@
                                     <th>Quiz Title</th>
                                     <th>Date Taken</th>
                                     <th>Score</th>
-                                    <th>Charts</th>
+                                    <th>Chart</th>
                                 </tr>
                                 @if (!$history->isEmpty())
                                 @foreach ($history as $attempts)
@@ -48,7 +49,7 @@
                                 <th>Quiz Title</th>
                                 <th>Date Taken</th>
                                 <th>Score</th>
-                                <th>Charts</th>
+                                <th>Chart</th>
                             </tr>
                             @if (!$history->isEmpty())
                             @foreach ($history as $attempts)

@@ -1,17 +1,20 @@
-@include('header')
-        <br>
+@include('groupssidebar')
         <div class="group-container" align="center">
+            <!-- Group information -->
             @if(!empty($userGroup))
-            <div class ="group-header">Your Group: {{$userGroup->group_name}} </div>
+            <div class ="group-header">Group: {{$userGroup->group_name}} </div>
                 <div class="group-content">
                     <div class="group-desc">
-                        <h3>Group Description:</br>{{$userGroup->group_desc}}</h3>
+                        <h4>Group Description:</h4>
+                        <p>{{$userGroup->group_desc}}</p>
                     </div>
                     <div class="group-subject">
-                        <h3>Group Subject: <br>{{$userGroup->subject_name}}</h3>
+                        <h4>Group Subject: </h4>
+                        <p>{{$userGroup->subject_name}}</p>
                     </div>
+                    <!-- Group members, educator can remove members if they are the original creator -->
                     <div class="group-members">
-                        <h3>Group Members:</h3>
+                        <h4>Group Members:</h4>
                         <table class='quiz-table'>
                             <tr>
                                 <th>Username</th>
@@ -30,27 +33,34 @@
                                     @else
                                         <td>Instructor</td>
                                     @endif
-                                    @if(Auth::user()->role == 1) 
+                                    @if(Auth::user()->role == 1 && $userGroup->user_id == Auth::id()) 
                                         @if($groupMembers->role == 0)
-                                            <td><a onclick="return confirm('Are you sure you want to remove this student from the group?')"href="{{route('leave-group', $groupMembers->user_id )}}">
+                                            <td><a onclick="return confirm('Are you sure you want to remove this student from the group?')"href="{{route('kick-group', $groupMembers->user_id)}}">
                                             <img src="{{asset('/images/delete.png')}}" style="width:20px"></a></td>
                                         @else
                                             <td>Cannot Remove</td>
+                                        @endif
+                                    @else
+                                        @if(Auth::user()->role == 1)
+                                            <td>Only original creator can remove</td>
                                         @endif
                                     @endif
                                 </tr>
                             @endforeach
                         </table>
-                        @if (Auth::user()->role == 1) 
+                        <!-- If the user is an educator and the original creator, they can manually add students to the group -->
+                        @if (Auth::user()->role == 1 && $userGroup->user_id == Auth::id()) 
                         <br>
-                        <h3>Add a student to the group:</h3>
+                        <h4>Add a student to the group:</h4>
                             <form method="POST" action="{{route('add-to-group', $userGroup->group_id )}}">
                                 @csrf
                                 <div class="add-student">
                                     <select name="user_id" id="user_id" required>
                                         <option value="">Student Name</option>
-                                        @foreach($noGroup as $student)
-                                            <option value="{{$student->user_id}}">{{$student->username}}</option>
+                                        @foreach($students as $student)
+                                            @if(App\Models\Member::where('user_id','=',$student->user_id)->where('group_id','=',$userGroup->group_id)->count() == 0)
+                                                <option value="{{$student->user_id}}">{{$student->username}}</option>
+                                            @endif
                                         @endforeach
                                     </select>
                                 </div><br>
@@ -60,7 +70,8 @@
                             </form>
                         @endif
                     </div><br>
-                    <h3>Recent Quizzes assigned to {{$userGroup->group_name}}</h3>
+                    <!-- Display recently assigned quizzes -->
+                    <h4>Recent Quizzes assigned to {{$userGroup->group_name}}</h4>
                     <div class="recentQuiz">
                         <table class='quiz-table'>
                             <tr><th colspan='6'>Recent Quizzes Assigned to {{$userGroup->group_name}}<th></tr>
@@ -90,16 +101,13 @@
                                     @else
                                         <td>{{$quizView -> time_limit}} </td>
                                     @endif
-                                    <!--Count number of questions on the quiz-->
+                                    <!-- Count number of questions on the quiz -->
                                     <td>{{App\Models\Question::where('quiz_id', '=', $quizView->quiz_id)->count();}}</td>
+                                    <!-- If student, allow to take quiz. If educator, allow to edit quiz -->
                                     @if (Auth::user()->role == 0)
-                                        @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
-                                            <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}"><img src="{{asset('/images/play.png')}}" style="width:20px"></td>
-                                        @else
-                                            <td>Private</td>
-                                        @endif      
+                                        <td><a class="link" href="{{route('standby', $quizView->quiz_id)}}"><img src="{{asset('/images/play.png')}}" style="width:20px"></td>
                                     @else
-                                        @if(!$quizView -> group_id || $quizView ->group_id == Auth::user()->group_id)
+                                        @if(!$quizView -> group_id || $quizView ->group_id == (App\Models\Member::where('user_id','=',Auth::id())->value('group_id')))
                                             @if($quizView->user_id == Auth::id())
                                                 <td><a class="link" href= "{{route('editquiz', $quizView->quiz_id ) }}"><img src="{{asset('/images/edit.png')}}" style="width:20px"></td>
                                             @else
@@ -116,37 +124,19 @@
                             @endif
                         </table>
                     </div>
+                    <!-- If student, allow to leave the group. If educator, allow to remove the group -->
                     @if (Auth::user()->role == 0)
-                        <a class="btn btn-primary" onclick="return confirm('Are you sure you want to leave this group?')" href="{{route('leave-group', Auth::id() )}}">Leave Group</a>
+                        <a class="btn btn-primary" onclick="return confirm('Are you sure you want to leave this group?')" href="{{route('leave-group', $userGroup->group_id )}}">Leave Group</a>
                     @else
                         <a class="btn btn-primary" onclick="return confirm('Are you sure you want to remove this group?\nThis will remove all students in the group.')" href="{{route('delete-group', $userGroup->group_id) }}">Remove Group</a>
                     @endif
                 </div>
             </div>
+            <!-- Default display upon pressing the groups tab -->
             @else
-                <div class ="group-header">Unfortunately, you have no group.</div>
+                <div class ="group-header">Group: None</div>
                 <div class="group-content">
-                    @if(Auth::user()->role == 0)
-                        <p>You may join a group here.</p>
-                        <table class='quiz-table'>
-                            <tr>
-                                <th>Group Name</th>
-                                <th>Group Description</th>
-                                <th>Subject</th>
-                                <th>Join</th>
-                            </tr>
-                            @foreach($allGroups as $publicGroups)
-                            <tr>
-                                <td>{{$publicGroups->group_name}}</td>
-                                <td>{{$publicGroups->group_desc}}</td>
-                                <td>{{$publicGroups->subject_name}}</td>
-                                <td><a href="{{route('join-group', $publicGroups->group_id )}}">Join</a>
-                            </tr>
-                            @endforeach
-                        </table>
-                    @elseif(Auth::user()->role == 1)
-                        <a class="btn btn-primary" href="{{route('create-group-view')}}">Create a new Group</a>
-                    @endif
+                    Please select a group to view data.
                 </div>
             @endif
         </div>

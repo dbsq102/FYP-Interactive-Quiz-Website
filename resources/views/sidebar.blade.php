@@ -1,6 +1,7 @@
         @include('header')
         <br>
         <div class="sidebar">
+            <!-- Sidebar for editing quiz -->
             <div class="sidebar-container">   
                 <div class="sidebar-header">Edit Quiz Sidebar (ID: {{Session::get('quizID')}})</div>
                     <div class="sidebar-content">
@@ -30,22 +31,6 @@
                                 <div class="col-md-6">
                                     <textarea id="update_quiz_desc" class="update_quiz_desc" name="update_quiz_desc" rows="5" cols="20" required></textarea>
                                 </div>
-                                @endif
-                            </div>
-
-                            <!-- Enable Items or not for Quiz-->
-                            <div class="row mb-3">
-                                <label for="update_items" class="col-md-4 col-form-label text-md-end">Special Privileges: </label>
-                                @if ($currQuiz->items == 1)
-                                <label for="update_items">Yes</input>
-                                <input id="update_items" type="radio" class="update_items" name="update_items" value="1" checked="checked"></input>
-                                <label for="update_items">No</input>
-                                <input id="update_items" type="radio" class="update_items" name="update_items" value="0"></input></br>
-                                @else ($currQuiz->items == 0)
-                                <label for="update_items">Yes</input>
-                                <input id="update_items" type="radio" class="update_items" name="update_items" value="1"></input>
-                                <label for="update_items">No</input>
-                                <input id="update_items" type="radio" class="update_items" name="update_items" value="0" checked="checked"></input></br>
                                 @endif
                             </div>
                             
@@ -97,8 +82,12 @@
                                 <select name="update_group_id" id="update_group_id">
                                     <option value="">None</option>
                                     @foreach($groups as $group)
-                                        @if($group->group_id == Auth::user()->group_id)
-                                            <option value="{{$group -> group_id}}">{{$group-> group_name}}</option>
+                                        @if($group->user_id == Auth::id())
+                                            @if($group->group_id == $currQuiz->group_id)
+                                                <option value="{{$group -> group_id}}" selected="selected">{{$group-> group_name}}</option>
+                                            @else
+                                                <option value="{{$group -> group_id}}">{{$group-> group_name}}</option>
+                                            @endif
                                         @endif
                                     @endforeach
                                 </select>

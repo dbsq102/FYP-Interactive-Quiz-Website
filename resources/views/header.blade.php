@@ -21,15 +21,11 @@
 <body>
     <div id='container'>
         <div id='menu'>
-            <p1></p1>
+            <p1 class="nav2"><img src="{{asset('/images/logo.png')}}" style="width:80px"></p1>
             <a class="nav" href="{{ route('home') }}">Home</a>
-            <a class="nav" href="{{ route('managequiz') }}">Manage Quizzes</a>
-            <a class="nav" href="{{ route('reports-view') }}">Reports</a>
-            @if (Auth::user()->group_id != NULL)
-                <a class="nav" href="{{ route('groups-view', Auth::user()->group_id) }}">Groups</a>
-            @else
-                <a class="nav" href="{{ route('groups-view', 0) }}">Groups</a>
-            @endif
+            <a class="nav" href="{{ route('managequiz') }}">Quizzes</a>
+            <a class="nav" href="{{ route('reports-view', 0) }}">Reports</a>
+            <a class="nav" href="{{ route('groups-view', 0)}}">Groups</a>
             <!--If user is a student-->
             @if (Auth::user()->role == 0)
             <div class="nav-right">

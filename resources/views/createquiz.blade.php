@@ -24,14 +24,6 @@
                                     <textarea id="quiz_desc" class="quiz_desc" name="quiz_desc" rows="5" cols="40" required></textarea>
                                 </div>
                             </div>
-
-                            <!-- Enable Items or not for Quiz-->
-                            <div class="row mb-3">
-                                <label for="items" class="col-md-4 col-form-label text-md-end">Enable Special Privileges & Items?</label>
-                                <input id="items" type="radio" class="items" name="items" value="1" checked="checked">Yes</input>
-                                </br></br>
-                                <input id="items" type="radio" class="items" name="items" value="0">No</input></br>
-                            </div>
                             
                             <!-- Select Game Mode -->
                             <div class="row mb-3">
@@ -68,13 +60,14 @@
                                 <select name="group_id" id="group_id">
                                     <option value="">None</option>
                                     @foreach($groups as $group)
-                                        @if($group->group_id == Auth::user()->group_id)
+                                        @if($group->user_id == Auth::id())
                                             <option value="{{$group -> group_id}}">{{$group-> group_name}}</option>
                                         @endif
                                     @endforeach
                                 </select>
                             </div>
 
+                            <!-- Submit Button -->
                             <div class="row mb-0">
                                 <div class="col-md-8 offset-md-4">
                                     <button type="submit" class="btn btn-primary">
@@ -87,6 +80,7 @@
                 </div>
             </div>
         </div>
+    <!--Script to disable time limit if game mode is set to Interactive or Mixed -->
     <script>
 	document.getElementById('gamemode_id').onchange = function() {
     	if (this.value == 2 || this.value == 3) {

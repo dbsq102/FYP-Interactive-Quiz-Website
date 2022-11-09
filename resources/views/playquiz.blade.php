@@ -1,5 +1,4 @@
         @include('header')
-
         <br><br><br><br>
         <div class="container">
             <div class="row align-items-center">
@@ -25,16 +24,16 @@
                                     <br><br>
                                     @endif
                                 @endforeach
-                            <!-- Multiple Select Answers-->
+                            <!-- Select Multiple Answers-->
                             @elseif ($currQues->type_id == 2)
                                 <form method="POST" action="{{route('check-multi-answer')}}">
                                     @csrf
                                     @foreach ($currQuesAns as $answer)                                
-                                        <label class="labelAns" for="answer{{$answer->ans_no}}">{{$answer->answer}}</label>
+                                        <label class="labelAns" for="ans{{$answer->ans_no}}">{{$answer->answer}}</label>
                                         @if($answer->correct == 1)
-                                        <input type="checkbox" id="ans" name="answer{{$answer->ans_no}}" class="answer{{$answer->ans_no}}" value="1">
+                                        <input type="checkbox" id="ans" name="ans{{$answer->ans_no}}" class="ans{{$answer->ans_no}}" value="1">
                                         @else
-                                        <input type="checkbox" id="ans" name="answer{{$answer->ans_no}}" class="answer{{$answer->ans_no}}" value="0">
+                                        <input type="checkbox" id="ans" name="ans{{$answer->ans_no}}" class="ans{{$answer->ans_no}}" value="0">
                                         @endif
                                         @if($loop->iteration % 2 == 0)
                                         <br><br>
@@ -48,17 +47,17 @@
                                     <div class="flip-card-container">
                                         <div class="flip-card-content">
                                             <div class="flip-card-front">
-                                                <a id="answer{{$answer->ans_no}}" class="cardLink">
+                                                <a id="ans{{$answer->ans_no}}" class="cardLink">
                                                 <img src="{{asset('/images/cover-card-2.png')}}" id="image" style="width:100px" ></a>
                                             </div>
                                             @if($answer->correct == 1)
                                             <div class="flip-card-back">
-                                                <a id="answer{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
+                                                <a id="ans{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
                                                 onclick="return alert('Correct!')"><div class="cardPlay">{{$answer->answer}}</div></a>
                                             </div>
                                             @else
                                             <div class="flip-card-back">
-                                                <a id="answer{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
+                                                <a id="ans{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
                                                 onclick="return alert('Sorry, your answer is incorrect.')"><div class="cardPlay">{{$answer->answer}}</div></a>
                                             </div>
                                             @endif
@@ -74,13 +73,13 @@
                                     @foreach ($currQuesAns as $answer)
                                         @if($answer->correct == 1)
                                             <div class="ansCard2" id="answer">
-                                                <a id="answer{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
+                                                <a id="ans{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
                                                 onclick="return alert('Correct!')">
                                                 <img src="{{asset('/images/cover-card.png')}}" id="image" style="width:200px" ></a>
                                             </div>
                                         @else
                                             <div class="ansCard2" id="answer">
-                                                <a id="answer{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
+                                                <a id="ans{{$answer->ans_no}}" class="cardLink" href="{{route('check-answer', $answer->correct)}}" value="{{$answer->correct}}"
                                                 onclick="return alert('Sorry, your answer is incorrect.')">
                                                 <img src="{{asset('/images/cover-card.png')}}" id="image" style="width:200px" ></a>
                                             </div>
@@ -112,8 +111,9 @@
                 return confirm('Are you sure you want to leave this ongoing quiz? Changes will not be saved.');
             });
         </script>
+        <!-- Change timers for regular question types if the quiz type is mixed -->
         @if($getGamemode == 1)
-            <!--Script for regular quiz time limit timer-->
+            <!--Script for regular quiz time limit-->
             <script>
                 //Countdown timer
                 if(localStorage.getItem('timelimit') === null) {
@@ -156,7 +156,7 @@
             </script>
         @else
             @if($currQues->type_id == 1 || $currQues->type_id == 2 || $currQues->type_id == 3)
-                <!--Script for normal timers-->
+                <!--Script for normal timers, used in multi-choice, multiple answers and card flip-->
                 <script>            
                     //Countdown timer
                     var timeleft = 15;
@@ -191,7 +191,7 @@
                     progress(15, 15, $('#progressBar')); 
                 </script>
             @elseif($currQues->type_id == 4)
-                <!--Script for quickfire questions-->
+                <!--Script for quickfire questions time limit-->
                 <script>            
                     //Countdown timer
                     var timeleft = 5;
@@ -226,7 +226,7 @@
                     progress(5, 5, $('#progressBar')); 
                 </script>
             @elseif($currQues->type_id == 5)
-                <!--Script for card flipping questions-->
+                <!--Script for card flipping questions time limit-->
                 @if(!Session::has('ansPhase'))
                     <script> 
                     //Phase 1, give 7 seconds to memorize card
@@ -303,5 +303,13 @@
                 @endif
             @endif
         @endif
+        <!-- Script for alerts -->
+        <script>
+            var msg = "{{Session::get('alert')}}";
+            var exist = "{{Session::has('alert')}}";
+            if(exist){
+                alert(msg);
+            }
+        </script>
     </body>
 </html>
