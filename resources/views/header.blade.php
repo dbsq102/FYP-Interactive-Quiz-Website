@@ -13,8 +13,10 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.css') }}" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <!-- Font awesome style -->
     <link href="{{ asset('css/font-awesome.min.css') }}" rel="stylesheet" />
+    
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
 </head>
@@ -46,3 +48,6 @@
             </div>
         </div>
     </div>
+    @if(Session::has('message'))
+        <p class="alert alert-info">{{Session::get('message')}}</p>
+    @endif

@@ -27,29 +27,17 @@ class GroupsController extends Controller
     public function groupsView($passGroupID) {
         //Get user's group
         if ($passGroupID != 0) {
-            $userGroup = DB::table('groups')
-            ->select('groups.group_id', 'groups.group_name', 'groups.group_desc', 'groups.public', 'groups.subject_id', 'groups.user_id', 'subject.subject_name')
-            ->join('subject', 'subject.subject_id', '=', 'groups.subject_id')
-            ->where('groups.group_id','=',$passGroupID)
-            ->first();
+            $userGroup = $this->getUserGroup();
         }
         else {
             $userGroup = NULL;
         }
 
         //get all groups
-        $allGroups = DB::table('groups')
-        ->select('groups.group_id', 'groups.group_name', 'groups.group_desc', 'groups.public', 'subject.subject_name')
-        ->join('subject', 'subject.subject_id', '=', 'groups.subject_id')
-        ->get();
+        $allGroups = $this->getAllGroups();
 
         //Get all members of the group
-        $users = DB::table('users')
-        ->select('users.user_id', 'users.username', 'users.email', 'users.role')
-        ->join('group_members', 'group_members.user_id','=','users.user_id')
-        ->where('group_members.group_id','=',$passGroupID)
-        ->orderBy('users.role', 'desc')
-        ->get();
+        $users = $this->getGroupMembers($passGroupID);
 
         //Get all students that are not in the group
         $students = DB::table('users')
@@ -58,14 +46,7 @@ class GroupsController extends Controller
         ->get();
 
         //Get all quizzes related to group
-        $quiz = DB::table('quiz')
-        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.time_limit', 'quiz.user_id', 
-        'quiz.group_id','subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
-        ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
-        ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
-        ->where('quiz.group_id','=', $passGroupID)
-        ->orderBy('quiz.quiz_id', 'asc')
-        ->get();
+        $quiz = $this->getAssignedQuiz($passGroupID);
         
         return view("groups")->with(compact('userGroup', 'allGroups', 'quiz', 'users', 'students'));
     }
@@ -203,4 +184,44 @@ class GroupsController extends Controller
             return redirect()->route('groups-view', $passGroupID);
         }
     }
+    /************************************************************************************************************/    
+    //Functions to get necessary data
+    public function getUserGroup() {
+        $userGroup = DB::table('groups')
+        ->select('groups.group_id', 'groups.group_name', 'groups.group_desc', 'groups.public', 'groups.subject_id', 'groups.user_id', 'subject.subject_name')
+        ->join('subject', 'subject.subject_id', '=', 'groups.subject_id')
+        ->where('groups.group_id','=',$passGroupID)
+        ->first();
+        return $userGroup;
+    }
+
+    public function getAllGroups() {
+        $allGroups = DB::table('groups')
+        ->select('groups.group_id', 'groups.group_name', 'groups.group_desc', 'groups.public', 'subject.subject_name')
+        ->join('subject', 'subject.subject_id', '=', 'groups.subject_id')
+        ->get();
+        return $allGroups;
+    }
+    public function getGroupMembers($passGroupID) {
+        $groupMembers = DB::table('users')
+        ->select('users.user_id', 'users.username', 'users.email', 'users.role')
+        ->join('group_members', 'group_members.user_id','=','users.user_id')
+        ->where('group_members.group_id','=',$passGroupID)
+        ->orderBy('users.role', 'desc')
+        ->get();
+        return $groupMembers;
+    }
+    public function getAssignedQuiz($passGroupID) {
+        $quiz = DB::table('quiz')
+        ->select('quiz.quiz_id', 'quiz.quiz_title', 'quiz.quiz_summary', 'quiz.time_limit', 'quiz.user_id', 
+        'quiz.group_id','subject.subject_name', 'game_mode.gamemode_name', 'game_mode.gamemode_id')
+        ->join('subject', 'quiz.subject_id', '=', 'subject.subject_id')
+        ->join('game_mode', 'quiz.gamemode_id', '=', 'game_mode.gamemode_id')
+        ->where('quiz.group_id','=', $passGroupID)
+        ->orderBy('quiz.quiz_id', 'asc')
+        ->get();
+        return $quiz;
+    }
+
+    /************************************************************************************************************/ 
 }
