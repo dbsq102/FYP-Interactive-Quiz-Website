@@ -14,7 +14,6 @@ class Question extends Model
                          'quiz_id',
                          'type_id',
                          'question',
-                         'ques_img', 
                          'ques_no'] ;
      public $timestamps = false;
 }

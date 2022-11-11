@@ -47,6 +47,9 @@ class GroupsController extends Controller
 
         //Get all quizzes related to group
         $quiz = $this->getAssignedQuiz($passGroupID);
+
+        //Put session data for current viewing group just in case
+        Session::put('currGroup', $passGroupID);
         
         return view("groups")->with(compact('userGroup', 'allGroups', 'quiz', 'users', 'students'));
     }
@@ -137,27 +140,24 @@ class GroupsController extends Controller
 
     //Function to kick out of a group
     public function kickGroup($passUserID) {
-        //Used in case res fails
-        $getGroupID = Groups::where('user_id', '=', Auth::id())->value('group_id');
-        
         $res = DB::table('group_members')
         ->where('user_id','=', $passUserID)
-        ->where('group_id','=', $getGroupID)
+        ->where('group_id','=', Session::get('currGroup'))
         ->delete();
 
         if ($res){
             Session::flash('message','Removed student from group.');
-            return redirect()->route('groups-view', $getGroupID);
+            return redirect()->route('groups-view', Session::get('currGroup'));
         } else {
             Session::flash('message','Failed to remove from group.');
-            return redirect()->route('groups-view', $getGroupID);
+            return redirect()->route('groups-view', Session::get('currGroup'));
         }
     }
 
     //Function to delete a group, instructors only
     public function deleteGroup($passGroupID) {
         //Find count of users assigned to the group 
-        $userCount = DB::table('users')
+        $userCount = DB::table('group_members')
         ->where('group_id', '=', $passGroupID)
         ->count();
 

@@ -3,7 +3,7 @@
         <div class="sidebar">
             <!-- Sidebar for editing quiz -->
             <div class="sidebar-container">   
-                <div class="sidebar-header">Edit Quiz Sidebar (ID: {{Session::get('quizID')}})</div>
+                <div class="sidebar-header">Edit Quiz Sidebar</div>
                     <div class="sidebar-content">
                         <form method="POST" action="{{ route('updatequiz') }}">
                         @csrf

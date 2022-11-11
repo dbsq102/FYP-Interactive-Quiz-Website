@@ -16,7 +16,6 @@ class Quiz extends Model
                          'gamemode_id',
                          'time_limit', 
                          'group_id', 
-                         'items', 
                          'subject_id', 
                          'user_id'] ;
      public $timestamps = false;

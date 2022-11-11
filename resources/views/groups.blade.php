@@ -128,7 +128,9 @@
                     @if (Auth::user()->role == 0)
                         <a class="btn btn-primary" onclick="return confirm('Are you sure you want to leave this group?')" href="{{route('leave-group', $userGroup->group_id )}}">Leave Group</a>
                     @else
-                        <a class="btn btn-primary" onclick="return confirm('Are you sure you want to remove this group?\nThis will remove all students in the group.')" href="{{route('delete-group', $userGroup->group_id) }}">Remove Group</a>
+                        @if(Auth::user()->role == 1 && $userGroup->user_id == Auth::id()) 
+                            <a class="btn btn-primary" onclick="return confirm('Are you sure you want to remove this group?\nThis will remove all students in the group.')" href="{{route('delete-group', $userGroup->group_id) }}">Remove Group</a>
+                        @endif
                     @endif
                 </div>
             </div>
