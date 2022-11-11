@@ -35,7 +35,11 @@
                                 <td>{{$group->group_name}}</td>
                                 <td>{{$group->group_desc}}</td>
                                 <td>{{$group->subject_name}}</td>
-                                <td><a href="{{route('group-charts-view', $group->group_id )}}"><img src="{{asset('/images/chart.png')}}" style="width:20px"></a></td>
+                                @if((App\Models\Member::where('group_id','=',$group->group_id)->count()) >= 2)
+                                    <td><a href="{{route('group-charts-view', $group->group_id )}}"><img src="{{asset('/images/chart.png')}}" style="width:20px"></a></td>
+                                @else
+                                    <td>No members in group.</td>
+                                @endif
                             </tr>
                             @endforeach
                         </table>

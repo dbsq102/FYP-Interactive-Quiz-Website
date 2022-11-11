@@ -27,7 +27,7 @@ class GroupsController extends Controller
     public function groupsView($passGroupID) {
         //Get user's group
         if ($passGroupID != 0) {
-            $userGroup = $this->getUserGroup();
+            $userGroup = $this->getUserGroup($passGroupID);
         }
         else {
             $userGroup = NULL;
@@ -186,7 +186,7 @@ class GroupsController extends Controller
     }
     /************************************************************************************************************/    
     //Functions to get necessary data
-    public function getUserGroup() {
+    public function getUserGroup($passGroupID) {
         $userGroup = DB::table('groups')
         ->select('groups.group_id', 'groups.group_name', 'groups.group_desc', 'groups.public', 'groups.subject_id', 'groups.user_id', 'subject.subject_name')
         ->join('subject', 'subject.subject_id', '=', 'groups.subject_id')

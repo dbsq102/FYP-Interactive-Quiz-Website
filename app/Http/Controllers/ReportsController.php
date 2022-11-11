@@ -28,7 +28,7 @@ class ReportsController extends Controller
             $mathCountAttempt = $this->countAttempt(1, 0);
             $sciCountAttempt = $this->countAttempt(2, 0);
         } else {
-            $history = $this->getHistory();
+            $history = $this->getHistory2();
             $countMath = $this->countQuiz(1, 1);
             $countSci = $this->countQuiz(2, 1);
             $countQuesMath = $this->countQues(1, 1);
@@ -118,6 +118,18 @@ class ReportsController extends Controller
         'history.date_taken', 'quiz.quiz_title')
         ->join('quiz', 'quiz.quiz_id','=', 'history.quiz_id')
         ->where('history.user_id','=', Auth::id())
+        ->orderBy('history_id', 'desc')
+        ->limit(10)
+        ->get();
+        return $history;
+    }
+    public function getHistory2() {
+        $history = DB::table('history')
+        ->select('history.history_id', 'history.user_id', 'history.quiz_id', 'history.score', 
+        'history.date_taken', 'quiz.quiz_title', 'users.username')
+        ->join('quiz', 'quiz.quiz_id','=', 'history.quiz_id')
+        ->join('users', 'users.user_id','=', 'history.user_id')
+        ->where('quiz.user_id','=', Auth::id())
         ->orderBy('history_id', 'desc')
         ->limit(10)
         ->get();
